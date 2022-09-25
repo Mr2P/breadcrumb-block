@@ -1,0 +1,25 @@
+{
+  "name": "breadcrumb-block",
+  "version": "1.0.0",
+  "description": "A block to display the breadcrumb trails to your site, supports schema.org microdata",
+  "author": "Phi Phan",
+  "license": "GPL-2.0-or-later",
+  "main": "build/index.js",
+  "scripts": {
+    "bump:patch": "node scripts/bump-version.js --type=patch",
+    "bump:minor": "node scripts/bump-version.js --type=minor",
+    "bump:major": "node scripts/bump-version.js --type=major",
+    "git-tag": "node scripts/git-tag.js",
+    "build": "wp-scripts build",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "start": "wp-scripts start",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "make-pot": "wp i18n make-pot . languages/breadcrumb-block.pot"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^24.2.0"
+  }
+}
