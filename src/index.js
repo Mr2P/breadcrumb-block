@@ -17,8 +17,9 @@ import "./style.scss";
 /**
  * Internal dependencies
  */
-import Edit from "./edit";
-import save from "./save";
+import edit from "./edit";
+import { ReactComponent as BlockIcon } from "./assets/block-icon.svg";
+import { title } from "./block.json";
 
 /**
  * Every block starts by registering a new block type definition.
@@ -26,13 +27,7 @@ import save from "./save";
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
 registerBlockType("boldblocks/breadcrumb-block", {
-	/**
-	 * @see ./edit.js
-	 */
-	edit: Edit,
-
-	/**
-	 * @see ./save.js
-	 */
-	save,
+  title,
+  icon: BlockIcon,
+  edit,
 });

@@ -2,11 +2,19 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 2,
   "name": "boldblocks/breadcrumb-block",
-  "version": "1.0.0",
   "title": "Breadcrumb Block",
   "category": "widgets",
-  "description": "A block to display the breadcrumb trails to your site, supports schema.org microdata.",
-  "attributes": {},
+  "description": "A simple breadcrumb trail block that supports JSON-LD structured data",
+  "attributes": {
+    "gap": {
+      "type": "number",
+      "default": ".4em"
+    },
+    "separator": {
+      "type": "string",
+      "default": "/"
+    }
+  },
   "supports": {
     "html": false,
     "anchor": true,

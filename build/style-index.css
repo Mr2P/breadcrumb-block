@@ -1,1 +1,1 @@
-.wp-block-boldblocks-breadcrumb-block{background-color:#21759b;color:#fff;padding:2px}
+.wp-block-boldblocks-breadcrumb-block ol{display:flex;flex-wrap:wrap;gap:var(--bb--crumb-gap,.4em);list-style:none;margin:0;padding:0}.wp-block-boldblocks-breadcrumb-block ol li{align-items:center;display:flex}.wp-block-boldblocks-breadcrumb-block ol li .sep{display:flex;line-height:1;margin-right:var(--bb--crumb-gap,.4em)}

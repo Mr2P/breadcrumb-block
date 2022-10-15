@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Breadcrumb Block
- * Description:       A block to display the breadcrumb trails to your site, supports schema.org microdata
+ * Description:       A simple breadcrumb trail block that supports JSON-LD structured data
  * Requires at least: 5.8
  * Requires PHP:      7.0
  * Version:           1.0.0
@@ -12,6 +12,14 @@
  * @copyright Copyright(c) 2022, Phi Phan
  */
 
+namespace BreadcrumbBlock;
+
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
+
+// Load required file.
+require_once __DIR__ . '/includes/breadcrumbs.php';
+
 /**
  * Registers the block using the metadata loaded from the `block.json` file.
  * Behind the scenes, it registers also all assets so they can be enqueued
@@ -20,6 +28,39 @@
  * @see https://developer.wordpress.org/reference/functions/register_block_type/
  */
 function breadcrumb_block_block_init() {
-	register_block_type( __DIR__ . '/build' );
+	register_block_type( __DIR__ . '/build', [ 'render_callback' => __NAMESPACE__ . '\\breadcrumb_block_render_block' ] );
 }
-add_action( 'init', 'breadcrumb_block_block_init' );
+add_action( 'init', __NAMESPACE__ . '\\breadcrumb_block_block_init' );
+
+/**
+ * Renders the `boldblocks/breadcrumb-block` block on the server.
+ *
+ * @param  array    $attributes Block attributes.
+ * @param  string   $content    Block default content.
+ * @param  WP_Block $block      Block instance.
+ * @return string
+ */
+function breadcrumb_block_render_block( $attributes, $content, $block ) {
+	$content = Breadcrumbs::get_instance()->get_breadcrumb_trail( [ 'separator' => $attributes['separator'] ?? '' ] );
+
+	$classes = '';
+	if ( isset( $attributes['textAlign'] ) ) {
+		$classes .= "has-text-align-{$attributes['textAlign']}";
+	}
+
+	$vars = [];
+	if ( isset( $attributes['gap'] ) ) {
+		$vars[] = '--bb--crumb-gap:' . $attributes['gap'];
+	}
+
+	$style = count( $vars ) > 0 ? \implode( ';', $vars ) : '';
+
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array(
+			'class' => $classes,
+			'style' => $style,
+		)
+	);
+
+	return sprintf( '<div %1$s>%2$s</div>', $wrapper_attributes, $content );
+}

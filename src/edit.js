@@ -1,25 +1,26 @@
 /**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ * External dependencies
  */
-import { __ } from '@wordpress/i18n';
+import classnames from "classnames";
 
 /**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
+ * WordPress dependencies
  */
-import { useBlockProps } from '@wordpress/block-editor';
+import { __ } from "@wordpress/i18n";
+import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
+import {
+  PanelBody,
+  Button,
+  ButtonGroup,
+  BaseControl,
+  __experimentalUnitControl,
+} from "@wordpress/components";
+const { UnitControl = __experimentalUnitControl } = wp.components;
 
 /**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
+ * Style
  */
-import './editor.scss';
+import "./editor.scss";
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -29,13 +30,135 @@ import './editor.scss';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit() {
-	return (
-		<p { ...useBlockProps() }>
-			{ __(
-				'Breadcrumb Block – hello from the editor!',
-				'breadcrumb-block'
-			) }
-		</p>
-	);
+export default function Edit({
+  attributes: { gap, separator },
+  setAttributes,
+  isSelected,
+}) {
+  const separatorOptions = [
+    { label: "/", value: "/" },
+    {
+      label: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          width="1em"
+          height="1em"
+          viewBox="0 0 16 16"
+        >
+          <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+        </svg>
+      ),
+      value: `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="1em" height="1em" viewBox="0 0 16 16">
+      <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+    </svg>`,
+    },
+    {
+      label: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          width="1em"
+          height="1em"
+          viewBox="0 0 16 16"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+          />
+        </svg>
+      ),
+      value: `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="1em" height="1em" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+    </svg>`,
+    },
+  ];
+  return (
+    <>
+      {isSelected && (
+        <>
+          <InspectorControls>
+            <PanelBody title={__("Block settings")}>
+              <div className="breadrumb-setings">
+                <UnitControl
+                  label={__("Gap", "breadcrumb-block")}
+                  value={gap}
+                  onChange={(gap) => setAttributes({ gap })}
+                />
+                <div className="toggle-group-control">
+                  <BaseControl
+                    className="toggle-group-control__label"
+                    label={__("Separator", "breadcrumb-block")}
+                  />
+                  <ButtonGroup
+                    aria-label={__("Separator icon", "breadcrumb-block")}
+                  >
+                    {separatorOptions.map(
+                      ({ label, value: optionValue, disabled = false }) => {
+                        return (
+                          <Button
+                            key={optionValue}
+                            isSmall
+                            variant={
+                              optionValue === separator ? "primary" : undefined
+                            }
+                            onClick={() =>
+                              setAttributes({ separator: optionValue })
+                            }
+                            style={{ verticalAlign: "top" }}
+                            disabled={disabled}
+                          >
+                            {label}
+                          </Button>
+                        );
+                      }
+                    )}
+                  </ButtonGroup>
+                </div>
+              </div>
+            </PanelBody>
+          </InspectorControls>
+        </>
+      )}
+      <div
+        {...useBlockProps({
+          style: {
+            "--bb--crumb-gap": gap,
+          },
+        })}
+      >
+        <nav role="navigation" aria-label="breadcrumb" class="breadcrumb">
+          <ol class="breadcrumb-items">
+            <li class="breadcrumb-item">
+              <a href="#" rel="home">
+                <span class="breadcrumb-item-name">
+                  {__("Home", "breadcrumb-block")}
+                </span>
+              </a>
+            </li>
+            <li class="breadcrumb-item">
+              <span
+                className="sep"
+                dangerouslySetInnerHTML={{ __html: separator }}
+              />
+              <a href="#">
+                <span class="breadcrumb-item-name">
+                  {__("Dummy parent", "breadcrumb-block")}
+                </span>
+              </a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item--current">
+              <span
+                className="sep"
+                dangerouslySetInnerHTML={{ __html: separator }}
+              />
+              <span class="breadcrumb-item-name">
+                {__("Dummy title", "breadcrumb-block")}
+              </span>
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </>
+  );
 }

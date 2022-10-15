@@ -6,7 +6,23 @@
  */
 
 .wp-block-boldblocks-breadcrumb-block {
-	background-color: #21759b;
-	color: #fff;
-	padding: 2px;
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bb--crumb-gap, .4em);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+
+      .sep  {
+        display: flex;
+        margin-right: var(--bb--crumb-gap, .4em);
+        line-height: 1;
+      }
+    }
+  }
 }
