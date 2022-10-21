@@ -477,7 +477,7 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 					$markup['itemListElement'][ $key ]['item'] += array( '@id' => $crumb[1] );
 				} elseif ( isset( $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'] ) ) {
 					$protocol    = isset( $_SERVER['HTTPS'] ) && ! empty( $_SERVER['HTTPS'] ) ? 'https' : 'http';
-					$current_url = set_url_scheme( $protocol . '://' . wp_unslash( $_SERVER['HTTP_HOST'] ) . wp_unslash( $_SERVER['REQUEST_URI'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$current_url = esc_url_raw( $protocol . '://' . wp_unslash( $_SERVER['HTTP_HOST'] ) . wp_unslash( $_SERVER['REQUEST_URI'] ) );
 
 					$markup['itemListElement'][ $key ]['item'] += array( '@id' => $current_url );
 				}
