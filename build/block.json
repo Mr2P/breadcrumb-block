@@ -4,7 +4,7 @@
   "name": "boldblocks/breadcrumb-block",
   "title": "Breadcrumb Block",
   "category": "widgets",
-  "description": "A block to display the breadcrumb trails to your site, supports JSON-LD structured data.",
+  "description": "A simple breadcrumb trail block that supports JSON-LD structured data",
   "attributes": {
     "gap": {
       "type": "number",
@@ -19,7 +19,10 @@
     "html": false,
     "anchor": true,
     "ariaLabel": true,
-    "align": true,
+    "align": [
+      "wide",
+      "full"
+    ],
     "color": {
       "gradients": true,
       "link": true,
