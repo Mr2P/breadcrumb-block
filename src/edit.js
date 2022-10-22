@@ -135,23 +135,23 @@ export default function Edit({
                   {__("Home", "breadcrumb-block")}
                 </span>
               </a>
-            </li>
-            <li class="breadcrumb-item">
               <span
                 className="sep"
                 dangerouslySetInnerHTML={{ __html: separator }}
               />
+            </li>
+            <li class="breadcrumb-item">
               <a href="#">
                 <span class="breadcrumb-item-name">
                   {__("Dummy parent", "breadcrumb-block")}
                 </span>
               </a>
-            </li>
-            <li class="breadcrumb-item breadcrumb-item--current">
               <span
                 className="sep"
                 dangerouslySetInnerHTML={{ __html: separator }}
               />
+            </li>
+            <li class="breadcrumb-item breadcrumb-item--current">
               <span class="breadcrumb-item-name">
                 {__("Dummy title", "breadcrumb-block")}
               </span>

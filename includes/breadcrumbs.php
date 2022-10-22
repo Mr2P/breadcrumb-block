@@ -178,14 +178,14 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 
 					$item = '';
 
-					if ( $item_position > 1 && $args['separator'] ) {
-						$item .= sprintf( '<span class="sep">%s</span>', $args['separator'] );
-					}
-
 					if ( ! empty( $crumb[1] ) && $item_count !== $item_position ) {
 						$item .= sprintf( '<a href="%1$s"><span class="breadcrumb-item-name">%2$s</span></a>', esc_url( $crumb[1] ), esc_html( $crumb[0] ) );
 					} else {
 						$item .= sprintf( '<span class="breadcrumb-item-name">%1$s</span>', esc_html( $crumb[0] ) );
+					}
+
+					if ( $item_count !== $item_position && $args['separator'] ) {
+						$item .= sprintf( '<span class="sep">%s</span>', $args['separator'] );
 					}
 
 					// Add list item classes.

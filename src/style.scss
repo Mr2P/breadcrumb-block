@@ -20,9 +20,13 @@
 
       .sep  {
         display: flex;
-        margin-right: var(--bb--crumb-gap, .4em);
+        margin-left: var(--bb--crumb-gap, .4em);
         line-height: 1;
       }
     }
+  }
+
+  .breadcrumb-item-name {
+    word-break: break-word;
   }
 }

@@ -19,7 +19,7 @@
     "html": false,
     "anchor": true,
     "ariaLabel": true,
-    "align": true,
+    "align": ["wide", "full"],
     "color": {
       "gradients": true,
       "link": true,
