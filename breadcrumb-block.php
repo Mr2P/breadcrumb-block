@@ -43,11 +43,6 @@ add_action( 'init', __NAMESPACE__ . '\\breadcrumb_block_block_init' );
 function breadcrumb_block_render_block( $attributes, $content, $block ) {
 	$content = Breadcrumbs::get_instance()->get_breadcrumb_trail( [ 'separator' => $attributes['separator'] ?? '' ] );
 
-	$classes = '';
-	if ( isset( $attributes['textAlign'] ) ) {
-		$classes .= "has-text-align-{$attributes['textAlign']}";
-	}
-
 	$vars = [];
 	if ( isset( $attributes['gap'] ) ) {
 		$vars[] = '--bb--crumb-gap:' . $attributes['gap'];
@@ -57,7 +52,6 @@ function breadcrumb_block_render_block( $attributes, $content, $block ) {
 
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(
-			'class' => $classes,
 			'style' => $style,
 		)
 	);
