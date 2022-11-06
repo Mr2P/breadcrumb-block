@@ -1,6 +1,6 @@
 === Breadcrumb Block ===
 Contributors:      Mr2P
-Tags:              breadcrumb, blocks, gutenberg, navigation, schema.org
+Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.1
