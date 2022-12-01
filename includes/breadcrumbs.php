@@ -252,7 +252,7 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 		 * Is home trail.
 		 */
 		protected function add_crumbs_home() {
-			$this->add_item( single_post_title( '', false, ), false, [ 'aria-current' => 'page' ] );
+			$this->add_item( single_post_title( '', false ), false, [ 'aria-current' => 'page' ] );
 		}
 
 		/**
