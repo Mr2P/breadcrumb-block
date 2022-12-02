@@ -4,7 +4,7 @@
  * Description:       A simple breadcrumb trail block that supports JSON-LD structured data
  * Requires at least: 5.8
  * Requires PHP:      7.0
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Phi Phan
  * Author URI:        https://boldblocks.net
  *
