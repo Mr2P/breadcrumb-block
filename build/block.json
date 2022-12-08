@@ -13,6 +13,10 @@
     "separator": {
       "type": "string",
       "default": "/"
+    },
+    "hideCurrentPage": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {

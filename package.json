@@ -1,6 +1,6 @@
 {
   "name": "breadcrumb-block",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A simple breadcrumb trail block that supports JSON-LD structured data",
   "author": "Phi Phan",
   "license": "GPL-2.0-or-later",
