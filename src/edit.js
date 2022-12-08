@@ -13,6 +13,7 @@ import {
   Button,
   ButtonGroup,
   BaseControl,
+  ToggleControl,
   __experimentalUnitControl,
 } from "@wordpress/components";
 const { UnitControl = __experimentalUnitControl } = wp.components;
@@ -31,7 +32,7 @@ import "./editor.scss";
  * @return {WPElement} Element to render.
  */
 export default function Edit({
-  attributes: { gap, separator },
+  attributes: { gap, separator, hideCurrentPage },
   setAttributes,
   isSelected,
 }) {
@@ -115,6 +116,13 @@ export default function Edit({
                     )}
                   </ButtonGroup>
                 </div>
+                <ToggleControl
+                  label={__("Hide current page", "breadcrumb-block")}
+                  checked={hideCurrentPage}
+                  onChange={(value) =>
+                    setAttributes({ hideCurrentPage: value })
+                  }
+                />
               </div>
             </PanelBody>
           </InspectorControls>
@@ -125,6 +133,7 @@ export default function Edit({
           style: {
             "--bb--crumb-gap": gap,
           },
+          className: hideCurrentPage ? "hide-current-page" : "",
         })}
       >
         <nav role="navigation" aria-label="breadcrumb" class="breadcrumb">
@@ -140,7 +149,7 @@ export default function Edit({
                 dangerouslySetInnerHTML={{ __html: separator }}
               />
             </li>
-            <li class="breadcrumb-item">
+            <li class="breadcrumb-item breadcrumb-item--parent">
               <a href="#">
                 <span class="breadcrumb-item-name">
                   {__("Dummy parent", "breadcrumb-block")}

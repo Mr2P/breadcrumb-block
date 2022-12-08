@@ -193,6 +193,8 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 
 					if ( $item_count === $item_position ) {
 						$item_class .= ' breadcrumb-item--current';
+					} elseif ( $item_count - 1 === $item_position ) {
+						$item_class .= ' breadcrumb-item--parent';
 					}
 
 					// Create list item attributes.

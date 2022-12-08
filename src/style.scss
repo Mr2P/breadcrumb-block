@@ -29,4 +29,11 @@
   .breadcrumb-item-name {
     word-break: break-word;
   }
+
+  &.hide-current-page {
+    .breadcrumb-item--parent .sep,
+    .breadcrumb-item--current {
+      display: none;
+    }
+  }
 }
