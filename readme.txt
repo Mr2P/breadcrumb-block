@@ -14,7 +14,7 @@ A simple breadcrumb trail block that supports JSON-LD structured data
 
 This is a single-block plugin for the breadcrumb trail. It's simple, lightweight and SEO friendly. It also includes some simple separator icons.
 
-If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/display-a-meta-field-as-block/reviews/#new-post) on WordPress.org to help it spread to more people. I would very much appreciate it.
+If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/breadcrumb-block/reviews/#new-post) on WordPress.org to help it spread to more people. I would very much appreciate it.
 
 Please check out my other plugins if you're interested:
 
