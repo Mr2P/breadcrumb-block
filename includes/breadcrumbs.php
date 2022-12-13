@@ -295,7 +295,7 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 				$post_type = get_post_type_object( get_post_type( $post ) );
 
 				if ( ! empty( $post_type->has_archive ) ) {
-					$this->add_item( $post_type->labels->singular_name, get_post_type_archive_link( get_post_type( $post ) ) );
+					$this->add_item( $post_type->labels->name, get_post_type_archive_link( get_post_type( $post ) ) );
 				}
 			} else {
 				$cat = current( get_the_category( $post ) );
@@ -463,6 +463,7 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 			}
 
 			$markup                    = array();
+			$markup['@context']        = 'http://schema.org';
 			$markup['@type']           = 'BreadcrumbList';
 			$markup['itemListElement'] = array();
 
