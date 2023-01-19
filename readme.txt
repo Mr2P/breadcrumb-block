@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.1
-Stable tag:        1.0.3
+Stable tag:        1.0.4
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,13 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.4 =
+*Release Date 19 Jan 2023*
+
+* FIX - Gap issue: adding the semicolon to the CSS variable
+* FIX - Could not modify breadcrumb data via the `breadcrumb_block_get_items` filter
+* DEV - Add a new arrow icon as separator
 
 = 1.0.3 =
 *Release Date 13 Dec 2022*
