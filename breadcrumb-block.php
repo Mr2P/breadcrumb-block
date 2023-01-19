@@ -45,10 +45,10 @@ function breadcrumb_block_render_block( $attributes, $content, $block ) {
 
 	$vars = [];
 	if ( isset( $attributes['gap'] ) ) {
-		$vars[] = '--bb--crumb-gap:' . $attributes['gap'];
+		$vars[] = '--bb--crumb-gap:' . $attributes['gap'] . ';';
 	}
 
-	$style = count( $vars ) > 0 ? \implode( ';', $vars ) : '';
+	$style = count( $vars ) > 0 ? \implode( '', $vars ) : '';
 
 	$block_class = ( $attributes['hideCurrentPage'] ?? false ) ? 'hide-current-page' : '';
 
