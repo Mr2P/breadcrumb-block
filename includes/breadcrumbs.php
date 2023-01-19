@@ -109,6 +109,9 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 				$this->paged_trail();
 			}
 
+			// Filter the items array.
+			$this->items = apply_filters( 'breadcrumb_block_get_items', $this->items, $this );
+
 			return $this->get_items();
 		}
 
@@ -118,7 +121,7 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 		 * @return array
 		 */
 		public function get_items() {
-			return apply_filters( 'breadcrumb_block_get_items', $this->items, $this );
+			return $this->items;
 		}
 
 		/**
@@ -498,9 +501,9 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 			if ( $this->structured_data ) {
 				echo '<script type="application/ld+json">' . _wp_specialchars(
 					wp_json_encode( $this->structured_data ),
-					ENT_NOQUOTES, // ENT_QUOTES, Escape quotes in attribute nodes only.
-					'UTF-8',                           // json_encode() outputs UTF-8 (really just ASCII), not the blog's charset.
-					true                               // Double escape entities: `&amp;` -> `&amp;amp;`.
+					ENT_NOQUOTES,  // ENT_QUOTES, Escape quotes in attribute nodes only.
+					'UTF-8',       // json_encode() outputs UTF-8 (really just ASCII), not the blog's charset.
+					true           // Double escape entities: `&amp;` -> `&amp;amp;`.
 				) . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
