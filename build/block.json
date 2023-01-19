@@ -7,7 +7,7 @@
   "description": "A simple breadcrumb trail block that supports JSON-LD structured data",
   "attributes": {
     "gap": {
-      "type": "number",
+      "type": "string",
       "default": ".4em"
     },
     "separator": {
