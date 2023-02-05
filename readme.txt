@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.1
-Stable tag:        1.0.4
+Stable tag:        1.0.5
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,7 @@ Please check out my other plugins if you're interested:
 
 * [Content Blocks Builder](https://wordpress.org/plugins/content-blocks-builder) - A tool to create blocks, patterns or variations easily for your site directly on the Block Editor.
 * [Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block) - A block to display a meta field or an ACF field as a block. It can also be used in the Query Loop block.
-* [Block Enhancements](https://wordpress.org/plugins/block-enhancements) - A plugin to add more useful features to blocks likes: icons, box-shadow, transform...
+* [Block Enhancements](https://wordpress.org/plugins/block-enhancements) - A plugin to add more useful features to blocks like icons, box-shadow, transform, hover style...
 * [Icon Separator](https://wordpress.org/plugins/icon-separator) - A tiny block just like the core/separator block but with the ability to add an icon to it.
 * [SVG Block](https://wordpress.org/plugins/svg-block) - A block to insert inline SVG images easily and safely. It also bundles with more than 3000 icons and some common non-rectangular dividers.
 * [Counting Number Block](https://wordpress.org/plugins/counting-number-block) - A block to display a number that has the number-counting effect.
@@ -47,6 +47,11 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.5 =
+*Release Date 05 Feb 2023*
+
+* DEV - Add a setting to hide the home page link
 
 = 1.0.4 =
 *Release Date 19 Jan 2023*
