@@ -30,6 +30,12 @@
     word-break: break-word;
   }
 
+  &.hide-home-page {
+    .breadcrumb-item--home {
+      display: none;
+    }
+  }
+
   &.hide-current-page {
     .breadcrumb-item--parent .sep,
     .breadcrumb-item--current {

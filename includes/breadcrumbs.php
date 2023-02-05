@@ -192,19 +192,24 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 					}
 
 					// Add list item classes.
-					$item_class = 'breadcrumb-item';
+					$item_classes = [ 'breadcrumb-item' ];
 
 					if ( $item_count === $item_position ) {
-						$item_class .= ' breadcrumb-item--current';
+						$item_classes[] = 'breadcrumb-item--current';
 					} elseif ( $item_count - 1 === $item_position ) {
-						$item_class .= ' breadcrumb-item--parent';
+						$item_classes[] = 'breadcrumb-item--parent';
 					}
 
 					// Create list item attributes.
-					$attributes = 'class="' . $item_class . '"';
+					$attributes = '';
 
 					if ( ! empty( $crumb[2] ) ) {
-						$attrs       = $crumb[2];
+						$attrs = $crumb[2];
+						if ( 'home' === ( $attrs['rel'] ?? '' ) ) {
+							$item_classes[] = 'breadcrumb-item--home';
+							unset( $attrs['rel'] );
+						}
+
 						$attributes .= array_reduce(
 							array_keys( $attrs ),
 							function ( $carry, $key ) use ( $attrs ) {
@@ -213,6 +218,8 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 							''
 						);
 					}
+
+					$attributes = sprintf( 'class="%1$s"%2$s', \implode( ' ', $item_classes ), $attributes );
 
 					// Build the list item.
 					$breadcrumb .= sprintf( '<%1$s %2$s>%3$s</%1$s>', tag_escape( $args['item_tag'] ), $attributes, $item );

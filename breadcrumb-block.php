@@ -50,12 +50,18 @@ function breadcrumb_block_render_block( $attributes, $content, $block ) {
 
 	$style = count( $vars ) > 0 ? \implode( '', $vars ) : '';
 
-	$block_class = ( $attributes['hideCurrentPage'] ?? false ) ? 'hide-current-page' : '';
+	$block_classes = [];
+	if ( $attributes['hideHomePage'] ?? false ) {
+		$block_classes[] = 'hide-home-page';
+	}
+	if ( $attributes['hideCurrentPage'] ?? false ) {
+		$block_classes[] = 'hide-current-page';
+	}
 
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(
 			'style' => $style,
-			'class' => $block_class,
+			'class' => implode( ' ', $block_classes ),
 		)
 	);
 

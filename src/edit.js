@@ -1,6 +1,7 @@
 /**
  * External dependencies
  */
+import classnames from "classnames";
 
 /**
  * WordPress dependencies
@@ -31,7 +32,7 @@ import "./editor.scss";
  * @return {WPElement} Element to render.
  */
 export default function Edit({
-  attributes: { gap, separator, hideCurrentPage },
+  attributes: { gap, separator, hideHomePage, hideCurrentPage },
   setAttributes,
   isSelected,
 }) {
@@ -135,6 +136,11 @@ export default function Edit({
                   </ButtonGroup>
                 </div>
                 <ToggleControl
+                  label={__("Hide the home page", "breadcrumb-block")}
+                  checked={hideHomePage}
+                  onChange={(value) => setAttributes({ hideHomePage: value })}
+                />
+                <ToggleControl
                   label={__("Hide current page", "breadcrumb-block")}
                   checked={hideCurrentPage}
                   onChange={(value) =>
@@ -151,13 +157,16 @@ export default function Edit({
           style: {
             "--bb--crumb-gap": gap,
           },
-          className: hideCurrentPage ? "hide-current-page" : "",
+          className: classnames({
+            "hide-current-page": hideCurrentPage,
+            "hide-home-page": hideHomePage,
+          }),
         })}
       >
         <nav role="navigation" aria-label="breadcrumb" class="breadcrumb">
           <ol class="breadcrumb-items">
-            <li class="breadcrumb-item">
-              <a href="#" rel="home">
+            <li class="breadcrumb-item breadcrumb-item--home">
+              <a href="#">
                 <span class="breadcrumb-item-name">
                   {__("Home", "breadcrumb-block")}
                 </span>

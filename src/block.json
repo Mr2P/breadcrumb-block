@@ -14,6 +14,10 @@
       "type": "string",
       "default": "/"
     },
+    "hideHomePage": {
+      "type": "boolean",
+      "default": false
+    },
     "hideCurrentPage": {
       "type": "boolean",
       "default": false
