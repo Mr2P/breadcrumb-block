@@ -257,7 +257,7 @@ if ( ! class_exists( 'Breadcrumbs' ) ) :
 		 * Front page trail.
 		 */
 		protected function add_crumbs_front_page() {
-			$this->add_item( __( 'Home', 'breadcrumb-block' ), esc_url( user_trailingslashit( home_url() ) ), [ 'rel' => 'home' ] );
+			$this->add_item( apply_filters( 'breadcrumb_block_home_text', __( 'Home', 'breadcrumb-block' ) ), esc_url( user_trailingslashit( apply_filters( 'breadcrumb_block_home_url', home_url() ) ) ), [ 'rel' => 'home' ] );
 		}
 
 		/**
