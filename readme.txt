@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.1
-Stable tag:        1.0.5
+Stable tag:        1.0.6
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,13 @@ A simple breadcrumb trail block that supports JSON-LD structured data
 
 This is a single-block plugin for the breadcrumb trail. It's simple, lightweight and SEO friendly. It also includes some simple separator icons.
 
-If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/breadcrumb-block/reviews/#new-post) on WordPress.org to help it spread to more people. I would very much appreciate it.
+= How to customize the breadcrumb =
+
+1. [How to change the markup of the block?](https://wordpress.org/support/topic/how-to-change-the-markup-of-the-block/)
+2. [How to add/remove the items of the breadcrumb trail?](https://wordpress.org/support/topic/how-to-add-remove-the-items-of-the-breadcrumb-trail/)
+3. [How to change the home item of the breadcrumb trail?](https://wordpress.org/support/topic/how-to-change-the-home-item-of-the-breadcrumb-trail/)
+
+If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/breadcrumb-block/reviews/#new-post) on WordPress.org to help us spread the word. I would very much appreciate it.
 
 Please check out my other plugins if you're interested:
 
@@ -47,6 +53,11 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.6 =
+*Release Date 12 Feb 2023*
+
+* Add new hooks `breadcrumb_block_home_text`, `breadcrumb_block_home_url`
 
 = 1.0.5 =
 *Release Date 05 Feb 2023*
