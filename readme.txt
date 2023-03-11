@@ -3,8 +3,8 @@ Contributors:      Mr2P
 Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
-Tested up to:      6.1
-Stable tag:        1.0.6
+Tested up to:      6.2
+Stable tag:        1.0.7
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,11 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.7 =
+*Release Date 11 Mar 2023*
+
+* FIX - Add namespace to class_exists check
 
 = 1.0.6 =
 *Release Date 12 Feb 2023*
