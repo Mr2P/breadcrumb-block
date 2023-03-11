@@ -12,7 +12,7 @@ namespace BreadcrumbBlock;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'Breadcrumbs' ) ) :
+if ( ! class_exists( Breadcrumbs::class ) ) :
 	/**
 	 * The Breadcrumbs class.
 	 * Adapted from WC_Breadcrumb and https://github.com/justintadlock/breadcrumb-trail
