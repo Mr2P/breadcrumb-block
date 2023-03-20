@@ -4,15 +4,15 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.2
-Stable tag:        1.0.7
+Stable tag:        1.0.8
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
-A simple breadcrumb trail block that supports JSON-LD structured data
+A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with Woocommerce
 
 == Description ==
 
-This is a single-block plugin for the breadcrumb trail. It's simple, lightweight and SEO friendly. It also includes some simple separator icons.
+This is a single-block plugin for the breadcrumb trail. It's simple, lightweight, SEO-friendly, and WooCommerce compatibility. It also includes some simple separator icons.
 
 = How to customize the breadcrumb =
 
@@ -53,6 +53,11 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.8 =
+*Release Date 20 Mar 2023*
+
+* DEV - Make the block compatible with woocommerce
 
 = 1.0.7 =
 *Release Date 11 Mar 2023*
