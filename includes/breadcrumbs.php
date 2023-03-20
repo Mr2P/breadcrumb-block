@@ -95,7 +95,21 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				'is_tax',
 			];
 
-			if ( ! is_front_page() || is_paged() ) {
+			$is_woocommerce_activated = $this->is_woocommerce_activated();
+			if ( $is_woocommerce_activated ) {
+				array_splice(
+					$conditionals,
+					4,
+					0,
+					[
+						'is_product_category',
+						'is_product_tag',
+						'is_shop',
+					]
+				);
+			}
+
+			if ( ( ! is_front_page() && ( ! $is_woocommerce_activated || ! ( is_post_type_archive() && intval( get_option( 'page_on_front' ) ) === wc_get_page_id( 'shop' ) ) ) ) || is_paged() ) {
 				$this->add_crumbs_front_page();
 
 				foreach ( $conditionals as $conditional ) {
@@ -301,21 +315,99 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				$permalink = get_permalink( $post );
 			}
 
-			if ( 'post' !== get_post_type( $post ) ) {
+			if ( 'product' === get_post_type( $post ) ) {
+				$this->prepend_shop_page();
+
+				$terms = wc_get_product_terms(
+					$post->ID,
+					'product_cat',
+					apply_filters(
+						'breadcrumb_block_product_terms_args',
+						array(
+							'orderby' => 'parent',
+							'order'   => 'DESC',
+						)
+					)
+				);
+
+				if ( $terms ) {
+					$main_term = apply_filters( 'breadcrumb_block_main_term', $terms[0], $terms, 'product_cat' );
+					$this->term_ancestors( $main_term->term_id, 'product_cat' );
+					$this->add_item( $main_term->name, get_term_link( $main_term ) );
+				}
+			} elseif ( 'post' !== get_post_type( $post ) ) {
 				$post_type = get_post_type_object( get_post_type( $post ) );
 
 				if ( ! empty( $post_type->has_archive ) ) {
 					$this->add_item( $post_type->labels->name, get_post_type_archive_link( get_post_type( $post ) ) );
 				}
+
+				do_action( 'breadcrumb_block_single_' . $post_type, $post, $this );
 			} else {
-				$cat = current( get_the_category( $post ) );
-				if ( $cat ) {
+				$cats = get_the_category( $post );
+				if ( $cats ) {
+					$cat = apply_filters( 'breadcrumb_block_main_term', $cats[0], $cats, 'category' );
 					$this->term_ancestors( $cat->term_id, 'category' );
 					$this->add_item( $cat->name, get_term_link( $cat ) );
 				}
 			}
 
 			$this->add_item( get_the_title( $post ), $permalink, [ 'aria-current' => 'page' ] );
+		}
+
+		/**
+		 * Product category trail.
+		 */
+		protected function add_crumbs_product_category() {
+			$current_term = $GLOBALS['wp_query']->get_queried_object();
+
+			$this->prepend_shop_page();
+			$this->term_ancestors( $current_term->term_id, 'product_cat' );
+			$this->add_item( $current_term->name, get_term_link( $current_term, 'product_cat' ) );
+		}
+
+		/**
+		 * Product tag trail.
+		 */
+		protected function add_crumbs_product_tag() {
+			$current_term = $GLOBALS['wp_query']->get_queried_object();
+
+			$this->prepend_shop_page();
+
+			/* translators: %s: product tag */
+			$this->add_item( sprintf( __( 'Products tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ), $current_term->name ), get_term_link( $current_term, 'product_tag' ) );
+		}
+
+		/**
+		 * Shop breadcrumb.
+		 */
+		protected function add_crumbs_shop() {
+			if ( intval( get_option( 'page_on_front' ) ) === wc_get_page_id( 'shop' ) ) {
+				return;
+			}
+
+			$_name = wc_get_page_id( 'shop' ) ? get_the_title( wc_get_page_id( 'shop' ) ) : '';
+
+			if ( ! $_name ) {
+				$product_post_type = get_post_type_object( 'product' );
+				$_name             = $product_post_type->labels->name;
+			}
+
+			$this->add_item( $_name, get_post_type_archive_link( 'product' ) );
+		}
+
+		/**
+		 * Prepend the shop page to shop breadcrumbs.
+		 */
+		protected function prepend_shop_page() {
+			$permalinks   = wc_get_permalink_structure();
+			$shop_page_id = wc_get_page_id( 'shop' );
+			$shop_page    = get_post( $shop_page_id );
+
+			// If permalinks contain the shop page in the URI prepend the breadcrumb with shop.
+			if ( $shop_page_id && $shop_page && isset( $permalinks['product_base'] ) && strstr( $permalinks['product_base'], '/' . $shop_page->post_name ) && intval( get_option( 'page_on_front' ) ) !== $shop_page_id ) {
+				$this->add_item( get_the_title( $shop_page ), get_permalink( $shop_page ) );
+			}
 		}
 
 		/**
@@ -513,6 +605,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 					true           // Double escape entities: `&amp;` -> `&amp;amp;`.
 				) . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
+		}
+
+		/**
+		 * Check is woocommere activated
+		 *
+		 * @return boolean
+		 */
+		public function is_woocommerce_activated() {
+			return class_exists( 'woocommerce' );
 		}
 	}
 endif;
