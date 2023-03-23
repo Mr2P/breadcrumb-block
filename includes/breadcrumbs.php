@@ -342,7 +342,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 					$this->add_item( $post_type->labels->name, get_post_type_archive_link( get_post_type( $post ) ) );
 				}
 
-				do_action( 'breadcrumb_block_single_' . $post_type, $post, $this );
+				do_action( 'breadcrumb_block_single_' . $post_type->name, $post, $this );
 			} else {
 				$cats = get_the_category( $post );
 				if ( $cats ) {
