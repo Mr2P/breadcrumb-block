@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.2
-Stable tag:        1.0.8
+Stable tag:        1.0.9
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,11 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.9 =
+*Release Date 24 Mar 2023*
+
+* FIX - Error converting WP_Post_Type to string. Thanks to @tnchuntic for reporting it.
 
 = 1.0.8 =
 *Release Date 20 Mar 2023*
