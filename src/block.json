@@ -5,6 +5,7 @@
   "title": "Breadcrumb Block",
   "category": "widgets",
   "description": "A simple breadcrumb trail block that supports JSON-LD structured data",
+  "keywords": ["breadcrumb", "navigation", "menu", "link"],
   "attributes": {
     "gap": {
       "type": "string",
@@ -21,6 +22,10 @@
     "hideCurrentPage": {
       "type": "boolean",
       "default": false
+    },
+    "homeText": {
+      "type": "string",
+      "default": ""
     }
   },
   "supports": {

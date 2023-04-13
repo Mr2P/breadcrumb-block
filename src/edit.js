@@ -14,9 +14,9 @@ import {
   ButtonGroup,
   BaseControl,
   ToggleControl,
-  __experimentalUnitControl,
+  TextControl,
+  __experimentalUnitControl as UnitControl,
 } from "@wordpress/components";
-const { UnitControl = __experimentalUnitControl } = wp.components;
 
 /**
  * Style
@@ -32,7 +32,7 @@ import "./editor.scss";
  * @return {WPElement} Element to render.
  */
 export default function Edit({
-  attributes: { gap, separator, hideHomePage, hideCurrentPage },
+  attributes: { gap, separator, hideHomePage, hideCurrentPage, homeText },
   setAttributes,
   isSelected,
 }) {
@@ -98,7 +98,7 @@ export default function Edit({
       {isSelected && (
         <>
           <InspectorControls>
-            <PanelBody title={__("Block settings")}>
+            <PanelBody title={__("Block settings", "breadcrumb-block")}>
               <div className="breadrumb-setings">
                 <UnitControl
                   label={__("Gap", "breadcrumb-block")}
@@ -140,6 +140,17 @@ export default function Edit({
                   checked={hideHomePage}
                   onChange={(value) => setAttributes({ hideHomePage: value })}
                 />
+                {!hideHomePage && (
+                  <TextControl
+                    label={__("Custom home text", "breadcrumb-block")}
+                    value={homeText}
+                    onChange={(value) => setAttributes({ homeText: value })}
+                    help={__(
+                      "Input a custom home text. Leave it blank to use the default text.",
+                      "breadcrumb-block"
+                    )}
+                  />
+                )}
                 <ToggleControl
                   label={__("Hide current page", "breadcrumb-block")}
                   checked={hideCurrentPage}
@@ -168,7 +179,7 @@ export default function Edit({
             <li class="breadcrumb-item breadcrumb-item--home">
               <a href="#">
                 <span class="breadcrumb-item-name">
-                  {__("Home", "breadcrumb-block")}
+                  {homeText ? homeText : __("Home", "breadcrumb-block")}
                 </span>
               </a>
               <span

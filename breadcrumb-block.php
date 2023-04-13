@@ -4,7 +4,7 @@
  * Description:       A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with Woocommerce
  * Requires at least: 5.8
  * Requires PHP:      7.0
- * Version:           1.0.9
+ * Version:           1.0.10
  * Author:            Phi Phan
  * Author URI:        https://boldblocks.net
  *
@@ -41,7 +41,14 @@ add_action( 'init', __NAMESPACE__ . '\\breadcrumb_block_block_init' );
  * @return string
  */
 function breadcrumb_block_render_block( $attributes, $content, $block ) {
-	$content = Breadcrumbs::get_instance()->get_breadcrumb_trail( [ 'separator' => $attributes['separator'] ?? '' ] );
+	$content = Breadcrumbs::get_instance()->get_breadcrumb_trail(
+		[
+			'separator' => $attributes['separator'] ?? '',
+			'labels'    => [
+				'home' => $attributes['homeText'] ?? '',
+			],
+		]
+	);
 
 	$vars = [];
 	if ( isset( $attributes['gap'] ) ) {

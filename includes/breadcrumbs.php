@@ -26,6 +26,13 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		protected $items = [];
 
 		/**
+		 * Arguments to build the breadcrumb trail.
+		 *
+		 * @var array
+		 */
+		protected $args = [];
+
+		/**
 		 * Structured data
 		 *
 		 * @var string
@@ -148,20 +155,13 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		}
 
 		/**
-		 * Get the breadcrumb trail.
+		 * Parse the arguments with the deaults.
 		 *
-		 * @param @args
 		 * @return array
 		 */
-		public function get_breadcrumb_trail( $args = [] ) {
-			// Clear old items.
-			$this->reset();
-
-			// Generate the breadcrumbs.
-			$this->generate();
-
+		public function parse_args( $args ) {
 			// Parse args.
-			$args = wp_parse_args(
+			$this->args = wp_parse_args(
 				$args,
 				[
 					'container'   => 'nav',
@@ -172,10 +172,30 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 					'item_before' => '',
 					'item_after'  => '',
 					'separator'   => '',
-					'aria_label'  => esc_attr_x( 'Breadcrumb', 'breadcrumb aria label', 'breadcrumb-block' ),
+					'aria_label'  => esc_attr_x( 'Breadcrumbs', 'breadcrumb aria label', 'breadcrumb-block' ),
+					'labels'      => [],
 					'echo'        => false,
 				]
 			);
+
+			return $this->args;
+		}
+
+		/**
+		 * Get the breadcrumb trail.
+		 *
+		 * @param @args
+		 * @return array
+		 */
+		public function get_breadcrumb_trail( $args = [] ) {
+			// Parse args.
+			$args = $this->parse_args( $args );
+
+			// Clear old items.
+			$this->reset();
+
+			// Generate the breadcrumbs.
+			$this->generate();
 
 			$breadcrumb = '';
 			$item_count = count( $this->items );
@@ -271,7 +291,9 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 * Front page trail.
 		 */
 		protected function add_crumbs_front_page() {
-			$this->add_item( apply_filters( 'breadcrumb_block_home_text', __( 'Home', 'breadcrumb-block' ) ), esc_url( user_trailingslashit( apply_filters( 'breadcrumb_block_home_url', home_url() ) ) ), [ 'rel' => 'home' ] );
+			$home_label = $this->args['labels']['home'] ?? '';
+			$home_text  = apply_filters( 'breadcrumb_block_home_text', empty( $home_label ) ? __( 'Home', 'breadcrumb-block' ) : $home_label );
+			$this->add_item( $home_text, esc_url( user_trailingslashit( apply_filters( 'breadcrumb_block_home_url', home_url() ) ) ), [ 'rel' => 'home' ] );
 		}
 
 		/**
