@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.2
-Stable tag:        1.0.9
+Stable tag:        1.0.10
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,11 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.10 =
+*Release Date 13 Apr 2023*
+
+* DEV - Add a setting to input a custom home text
 
 = 1.0.9 =
 *Release Date 24 Mar 2023*
