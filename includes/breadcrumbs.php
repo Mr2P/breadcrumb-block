@@ -368,8 +368,17 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			} elseif ( 'post' !== get_post_type( $post ) ) {
 				$post_type = get_post_type_object( get_post_type( $post ) );
 
-				if ( ! empty( $post_type->has_archive ) ) {
-					$this->add_item( $post_type->labels->name, get_post_type_archive_link( get_post_type( $post ) ) );
+				// If the post has a parent, follow the parent trail.
+				if ( 0 < $post->post_parent ) {
+
+					$this->add_post_parents( $post->post_parent );
+
+				} else {
+
+					// If the post doesn't have a parent, get its hierarchy based off the post type.
+					if ( ! empty( $post_type->has_archive ) ) {
+						$this->add_item( $post_type->labels->name, get_post_type_archive_link( get_post_type( $post ) ) );
+					}
 				}
 
 				do_action( 'breadcrumb_block_single_' . $post_type->name, $post, $this );
@@ -437,6 +446,47 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			// If permalinks contain the shop page in the URI prepend the breadcrumb with shop.
 			if ( $shop_page_id && $shop_page && isset( $permalinks['product_base'] ) && strstr( $permalinks['product_base'], '/' . $shop_page->post_name ) && intval( get_option( 'page_on_front' ) ) !== $shop_page_id ) {
 				$this->add_item( get_the_title( $shop_page ), get_permalink( $shop_page ) );
+			}
+		}
+
+		/**
+		 * Adds a specific post's parents to the items.
+		 *
+		 * @param int $post_id
+		 */
+		protected function add_post_parents( $post_id ) {
+
+			$ancestors = array();
+
+			while ( $post_id ) {
+
+				// Get the post by ID.
+				$post = get_post( $post_id );
+
+				// If we hit a page that's set as the front page, bail.
+				if ( 'page' == $post->post_type && 'page' == get_option( 'show_on_front' ) && $post_id == get_option( 'page_on_front' ) ) {
+					break;
+				}
+
+				// Add the formatted post link to the array of parents.
+				$ancestors[] = array(
+					'name'      => get_the_title( $post_id ),
+					'permalink' => get_permalink( $post_id )
+				);
+
+				// If there's no longer a post parent, break out of the loop.
+				if ( 0 >= $post->post_parent ) {
+					break;
+				}
+
+				// Change the post ID to the parent post to continue looping.
+				$post_id = $post->post_parent;
+			}
+
+			$hierarchy = array_reverse( $ancestors );
+
+			foreach ( $hierarchy as $item ) {
+				$this->add_item( $item['name'], $item['permalink'] );
 			}
 		}
 
