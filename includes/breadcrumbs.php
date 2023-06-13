@@ -274,6 +274,14 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				);
 			}
 
+			// Ensure shortcode brackets ae HTML entity encoded, so shortcodes are not ran if they exist in breadcrumb name.
+			$replace = array(
+				'[' => '&#91;',
+				']' => '&#93;',
+			);
+
+			$breadcrumb = str_replace( array_keys( $replace ), array_values( $replace ), $breadcrumb );
+
 			// Allow third-party to filter the breadcrumb trail HTML.
 			$breadcrumb = apply_filters( 'breadcrumb_block_get_breadcrumb_trail', $breadcrumb, $args, $this );
 
