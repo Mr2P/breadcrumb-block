@@ -19,15 +19,14 @@ import "./style.scss";
  */
 import edit from "./edit";
 import { ReactComponent as BlockIcon } from "./assets/block-icon.svg";
-import { title } from "./block.json";
+import metadata from "./block.json";
 
 /**
  * Every block starts by registering a new block type definition.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-registerBlockType("boldblocks/breadcrumb-block", {
-  title,
+registerBlockType(metadata, {
   icon: BlockIcon,
   edit,
 });

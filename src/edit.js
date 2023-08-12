@@ -64,7 +64,7 @@ export default function Edit({
           viewBox="0 0 16 16"
         >
           <path
-            fill-rule="evenodd"
+            fillRule="evenodd"
             d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
           />
         </svg>
@@ -83,7 +83,7 @@ export default function Edit({
           viewBox="0 0 16 16"
         >
           <path
-            fill-rule="evenodd"
+            fillRule="evenodd"
             d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
           />
         </svg>
@@ -174,11 +174,11 @@ export default function Edit({
           }),
         })}
       >
-        <nav role="navigation" aria-label="breadcrumb" class="breadcrumb">
-          <ol class="breadcrumb-items">
-            <li class="breadcrumb-item breadcrumb-item--home">
+        <nav role="navigation" aria-label="breadcrumb" className="breadcrumb">
+          <ol className="breadcrumb-items">
+            <li className="breadcrumb-item breadcrumb-item--home">
               <a href="#">
-                <span class="breadcrumb-item-name">
+                <span className="breadcrumb-item-name">
                   {homeText ? homeText : __("Home", "breadcrumb-block")}
                 </span>
               </a>
@@ -187,9 +187,9 @@ export default function Edit({
                 dangerouslySetInnerHTML={{ __html: separator }}
               />
             </li>
-            <li class="breadcrumb-item breadcrumb-item--parent">
+            <li className="breadcrumb-item breadcrumb-item--parent">
               <a href="#">
-                <span class="breadcrumb-item-name">
+                <span className="breadcrumb-item-name">
                   {__("Dummy parent", "breadcrumb-block")}
                 </span>
               </a>
@@ -198,8 +198,8 @@ export default function Edit({
                 dangerouslySetInnerHTML={{ __html: separator }}
               />
             </li>
-            <li class="breadcrumb-item breadcrumb-item--current">
-              <span class="breadcrumb-item-name">
+            <li className="breadcrumb-item breadcrumb-item--current">
+              <span className="breadcrumb-item-name">
                 {__("Dummy title", "breadcrumb-block")}
               </span>
             </li>
