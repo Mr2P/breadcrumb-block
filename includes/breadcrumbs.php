@@ -51,7 +51,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 */
 		private function __construct() {
 			// Generate structured data.
-			add_action( 'breadcrumb_block_render_breadcrumb_trail', [ $this, 'generate_breadcrumb_structured_data' ], 10, 3 );
+			add_action( 'breadcrumb_block_render_breadcrumb_trail', [ $this, 'generate_breadcrumb_structured_data' ], 10 );
 
 			// Out the structured data to the front end.
 			add_action( 'wp_footer', [ $this, 'output_structured_data' ] );
