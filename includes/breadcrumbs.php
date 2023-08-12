@@ -274,13 +274,10 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				);
 			}
 
-			// Ensure shortcode brackets ae HTML entity encoded, so shortcodes are not ran if they exist in breadcrumb name.
-			$replace = array(
-				'[' => '&#91;',
-				']' => '&#93;',
-			);
-
-			$breadcrumb = str_replace( array_keys( $replace ), array_values( $replace ), $breadcrumb );
+			// Allow the ability to remove the shortcodes from the breadcrumb.
+			if ( apply_filters( 'breadcrumb_block_strip_shortcodes', false, $this ) ) {
+				$breadcrumb = strip_shortcodes( $breadcrumb );
+			}
 
 			// Allow third-party to filter the breadcrumb trail HTML.
 			$breadcrumb = apply_filters( 'breadcrumb_block_get_breadcrumb_trail', $breadcrumb, $args, $this );
@@ -368,18 +365,16 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			} elseif ( 'post' !== get_post_type( $post ) ) {
 				$post_type = get_post_type_object( get_post_type( $post ) );
 
-				// If the post has a parent, follow the parent trail.
-				if ( 0 < $post->post_parent ) {
-
-					$this->add_post_parents( $post->post_parent );
-
-				} else {
-
+				// Allow the ability to remove the post type name from the breadcrumb.
+				if ( apply_filters( 'breadcrumb_block_add_post_type_name', true, $post, $this ) ) {
 					// If the post doesn't have a parent, get its hierarchy based off the post type.
 					if ( ! empty( $post_type->has_archive ) ) {
 						$this->add_item( $post_type->labels->name, get_post_type_archive_link( get_post_type( $post ) ) );
 					}
 				}
+
+				// If the post has a parent, follow the parent trail.
+				$this->add_parent_crumbs( $post->post_parent );
 
 				do_action( 'breadcrumb_block_single_' . $post_type->name, $post, $this );
 			} else {
@@ -450,60 +445,37 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		}
 
 		/**
-		 * Adds a specific post's parents to the items.
-		 *
-		 * @param int $post_id
-		 */
-		protected function add_post_parents( $post_id ) {
-
-			$ancestors = array();
-
-			while ( $post_id ) {
-
-				// Get the post by ID.
-				$post = get_post( $post_id );
-
-				// If we hit a page that's set as the front page, bail.
-				if ( 'page' == $post->post_type && 'page' == get_option( 'show_on_front' ) && $post_id == get_option( 'page_on_front' ) ) {
-					break;
-				}
-
-				// Add the formatted post link to the array of parents.
-				$ancestors[] = array(
-					'name'      => get_the_title( $post_id ),
-					'permalink' => get_permalink( $post_id )
-				);
-
-				// If there's no longer a post parent, break out of the loop.
-				if ( 0 >= $post->post_parent ) {
-					break;
-				}
-
-				// Change the post ID to the parent post to continue looping.
-				$post_id = $post->post_parent;
-			}
-
-			$hierarchy = array_reverse( $ancestors );
-
-			foreach ( $hierarchy as $item ) {
-				$this->add_item( $item['name'], $item['permalink'] );
-			}
-		}
-
-		/**
 		 * Page trail.
 		 */
 		protected function add_crumbs_page() {
 			global $post;
 
-			if ( $post->post_parent ) {
+			// Add parent pages if any.
+			$this->add_parent_crumbs( $post->post_parent );
+
+			$this->add_item( get_the_title(), get_permalink(), [ 'aria-current' => 'page' ] );
+		}
+
+		/**
+		 * Add parent crumbs for page and other hierarchical post types.
+		 *
+		 * @return void
+		 */
+		protected function add_parent_crumbs( $parent_id ) {
+			if ( $parent_id ) {
 				$parent_crumbs = array();
-				$parent_id     = $post->post_parent;
 
 				while ( $parent_id ) {
-					$page            = get_post( $parent_id );
-					$parent_id       = $page->post_parent;
-					$parent_crumbs[] = array( get_the_title( $page->ID ), get_permalink( $page->ID ) );
+					$post = get_post( $parent_id );
+
+					// Ignore home page.
+					if ( 'page' === $post->post_type && $parent_id === intval( get_option( 'page_on_front' ) ) ) {
+						break;
+					}
+
+					$parent_crumbs[] = array( get_the_title( $post->ID ), get_permalink( $post->ID ) );
+
+					$parent_id = $post->post_parent;
 				}
 
 				$parent_crumbs = array_reverse( $parent_crumbs );
@@ -512,8 +484,6 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 					$this->add_item( $crumb[0], $crumb[1] );
 				}
 			}
-
-			$this->add_item( get_the_title(), get_permalink(), [ 'aria-current' => 'page' ] );
 		}
 
 		/**
