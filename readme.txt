@@ -3,8 +3,8 @@ Contributors:      Mr2P
 Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
-Tested up to:      6.2
-Stable tag:        1.0.10
+Tested up to:      6.3
+Stable tag:        1.0.11
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,15 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.11 =
+*Release Date 12 August 2023*
+
+* DEV - Refactor block metadata and upgrade to apiVerion 3
+* DEV - Add a hook `apply_filters( 'breadcrumb_block_strip_shortcodes', false, $breadcrumb_instance )` to allow opt-in/opt-out shortcodes in the post title. Thanks to Steven A. Zahm (https://github.com/shazahm1)
+* DEV - Add parent crumbs to other hierarchical post types. Thanks to Steven A. Zahm (https://github.com/shazahm1)
+* DEV - Add a hook `apply_filters( 'breadcrumb_block_add_post_type_name', true, $post, $breadcrumb_instance )` to allow opt-in/opt-out post type name for custom post types
+* Fix - Conflict style with Bootstrap's breadcrumb
 
 = 1.0.10 =
 *Release Date 13 Apr 2023*
