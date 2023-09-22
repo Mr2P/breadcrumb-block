@@ -178,7 +178,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				]
 			);
 
-			return $this->args;
+			return apply_filters( 'breadcrumb_block_get_args', $this->args );
 		}
 
 		/**
