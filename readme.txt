@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.3
-Stable tag:        1.0.11
+Stable tag:        1.0.12
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,11 +14,30 @@ A simple breadcrumb trail block that supports JSON-LD structured data and is com
 
 This is a single-block plugin for the breadcrumb trail. It's simple, lightweight, SEO-friendly, and WooCommerce compatibility. It also includes some simple separator icons.
 
-= How to customize the breadcrumb =
+=== How to customize the breadcrumb ===
 
-1. [How to change the markup of the block?](https://wordpress.org/support/topic/how-to-change-the-markup-of-the-block/)
-2. [How to add/remove the items of the breadcrumb trail?](https://wordpress.org/support/topic/how-to-add-remove-the-items-of-the-breadcrumb-trail/)
-3. [How to change the home item of the breadcrumb trail?](https://wordpress.org/support/topic/how-to-change-the-home-item-of-the-breadcrumb-trail/)
+1. How to change the markup of the block?
+
+        add_filter( 'breadcrumb_block_get_breadcrumb_trail', function ( $markup, $args, $breadcrumbs_instance ) {
+          return $markup;
+        }, 10, 3 );
+
+2. How to add or remove the items from the breadcrumb trail?
+
+        add_filter( 'breadcrumb_block_get_items', function ( $items, $breadcrumbs_instance ) {
+          return $items;
+        }, 10, 2 );
+
+3. How to use a custom separator for the breadcrumb trail?
+
+        add_filter( 'breadcrumb_block_get_args', function ( $args ) {
+          // For example, change separator.
+          $args['separator'] = '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"	width="1em"	height="1em" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"/><path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"/></svg>';
+          return $args;
+        } );
+
+    The custom separator should be an inline SVG. To make sure it displays properly, it should have three attributes: width, height, and fill. The values of these attributes should be as follows: `fill="currentColor" width="1em" height="1em"`.
+    Using this hook, you can customize other attributes such as container, before, after, list_tag, item_tag, item_before, item_after, separator.
 
 If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/breadcrumb-block/reviews/#new-post) on WordPress.org to help us spread the word. I would very much appreciate it.
 
@@ -53,6 +72,11 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.12 =
+*Release Date 22 September 2023*
+
+* Added - A new hook `breadcrumb_block_get_args` for customizing the output of the breadcrumb.
 
 = 1.0.11 =
 *Release Date 12 August 2023*
@@ -98,7 +122,7 @@ Anyone can use this plugin.
 
 * FIX - Gap issue: adding the semicolon to the CSS variable
 * FIX - Could not modify breadcrumb data via the `breadcrumb_block_get_items` filter
-* DEV - Add a new arrow icon as separator
+* DEV - Add a new arrow icon as a separator
 
 = 1.0.3 =
 *Release Date 13 Dec 2022*
