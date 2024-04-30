@@ -63,7 +63,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 * @return Breadcrumbs
 		 */
 		public static function get_instance() {
-			if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Breadcrumbs ) ) {
+			if ( ! isset( self::$instance ) ) {
 				self::$instance = new Breadcrumbs();
 			}
 
@@ -76,9 +76,16 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 * @param string $name Name.
 		 * @param string $link Link.
 		 * @param array  $attrs
+		 * @param array  $context
 		 */
-		public function add_item( $name, $link = '', $attrs = [] ) {
-			$this->items[] = [ wp_strip_all_tags( $name ), $link, $attrs ];
+		public function add_item( $name, $link = '', $attrs = [], $context = [] ) {
+			// Allow changing the item.
+			$item = apply_filters( 'breadcrumb_block_get_item', [ wp_strip_all_tags( $name ), $link, $attrs ], $context );
+
+			// Add the ability to remove an item from the crumbs.
+			if ( $item ) {
+				$this->items[] = $item;
+			}
 		}
 
 
@@ -289,7 +296,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				return $breadcrumb;
 			}
 
-			echo $breadcrumb; // WPCS: XSS OK.
+			echo $breadcrumb; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		/**
@@ -298,21 +305,21 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		protected function add_crumbs_front_page() {
 			$home_label = $this->args['labels']['home'] ?? '';
 			$home_text  = apply_filters( 'breadcrumb_block_home_text', empty( $home_label ) ? __( 'Home', 'breadcrumb-block' ) : $home_label );
-			$this->add_item( $home_text, esc_url( user_trailingslashit( apply_filters( 'breadcrumb_block_home_url', home_url() ) ) ), [ 'rel' => 'home' ] );
+			$this->add_item( $home_text, esc_url( user_trailingslashit( apply_filters( 'breadcrumb_block_home_url', home_url() ) ) ), [ 'rel' => 'home' ], [ 'type' => 'front_page' ] );
 		}
 
 		/**
 		 * Is home trail.
 		 */
 		protected function add_crumbs_home() {
-			$this->add_item( single_post_title( '', false ), false, [ 'aria-current' => 'page' ] );
+			$this->add_item( single_post_title( '', false ), '', [ 'aria-current' => 'page' ], [ 'type' => 'home' ] );
 		}
 
 		/**
 		 * 404 trail.
 		 */
 		protected function add_crumbs_404() {
-			$this->add_item( __( 'Error 404', 'breadcrumb-block' ), false, [ 'aria-current' => 'page' ] );
+			$this->add_item( __( 'Error 404', 'breadcrumb-block' ), '', [ 'aria-current' => 'page' ], [ 'type' => '404' ] );
 		}
 
 		/**
@@ -322,7 +329,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			global $post;
 
 			$this->add_crumbs_single( $post->post_parent, get_permalink( $post->post_parent ) );
-			$this->add_item( get_the_title(), get_permalink(), [ 'aria-current' => 'page' ] );
+			$this->add_item(
+				get_the_title(),
+				get_permalink(),
+				[ 'aria-current' => 'page' ],
+				[
+					'type'   => 'attachment',
+					'object' => $post,
+				]
+			);
 		}
 
 		/**
@@ -335,7 +350,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			if ( ! $post_id ) {
 				global $post;
 			} else {
-				$post = get_post( $post_id ); // WPCS: override ok.
+				$post = get_post( $post_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			}
 
 			if ( ! $permalink ) {
@@ -360,7 +375,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				if ( $terms ) {
 					$main_term = apply_filters( 'breadcrumb_block_main_term', $terms[0], $terms, 'product_cat' );
 					$this->term_ancestors( $main_term->term_id, 'product_cat' );
-					$this->add_item( $main_term->name, get_term_link( $main_term ) );
+					$this->add_item(
+						$main_term->name,
+						get_term_link( $main_term ),
+						false,
+						[
+							'type'   => 'term',
+							'object' => $main_term,
+						]
+					);
 				}
 			} elseif ( 'post' !== get_post_type( $post ) ) {
 				$post_type = get_post_type_object( get_post_type( $post ) );
@@ -369,7 +392,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				if ( apply_filters( 'breadcrumb_block_add_post_type_name', true, $post, $this ) ) {
 					// If the post doesn't have a parent, get its hierarchy based off the post type.
 					if ( ! empty( $post_type->has_archive ) ) {
-						$this->add_item( $post_type->labels->name, get_post_type_archive_link( get_post_type( $post ) ) );
+						$this->add_item(
+							$post_type->labels->name,
+							get_post_type_archive_link( get_post_type( $post ) ),
+							false,
+							[
+								'type'   => 'post_type_archive',
+								'object' => $post_type,
+							]
+						);
 					}
 				}
 
@@ -382,11 +413,27 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				if ( $cats ) {
 					$cat = apply_filters( 'breadcrumb_block_main_term', $cats[0], $cats, 'category' );
 					$this->term_ancestors( $cat->term_id, 'category' );
-					$this->add_item( $cat->name, get_term_link( $cat ) );
+					$this->add_item(
+						$cat->name,
+						get_term_link( $cat ),
+						false,
+						[
+							'type'   => 'term',
+							'object' => $cat,
+						]
+					);
 				}
 			}
 
-			$this->add_item( get_the_title( $post ), $permalink, [ 'aria-current' => 'page' ] );
+			$this->add_item(
+				get_the_title( $post ),
+				$permalink,
+				[ 'aria-current' => 'page' ],
+				[
+					'type'   => 'single',
+					'object' => $post,
+				]
+			);
 		}
 
 		/**
@@ -397,7 +444,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 
 			$this->prepend_shop_page();
 			$this->term_ancestors( $current_term->term_id, 'product_cat' );
-			$this->add_item( $current_term->name, get_term_link( $current_term, 'product_cat' ) );
+			$this->add_item(
+				$current_term->name,
+				get_term_link( $current_term, 'product_cat' ),
+				false,
+				[
+					'type'   => 'term',
+					'object' => $current_term,
+				]
+			);
 		}
 
 		/**
@@ -409,7 +464,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			$this->prepend_shop_page();
 
 			/* translators: %s: product tag */
-			$this->add_item( sprintf( __( 'Products tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ), $current_term->name ), get_term_link( $current_term, 'product_tag' ) );
+			$this->add_item(
+				sprintf( __( 'Products tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ), $current_term->name ),
+				get_term_link( $current_term, 'product_tag' ),
+				false,
+				[
+					'type'   => 'term',
+					'object' => $current_term,
+				]
+			);
 		}
 
 		/**
@@ -420,14 +483,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				return;
 			}
 
-			$_name = wc_get_page_id( 'shop' ) ? get_the_title( wc_get_page_id( 'shop' ) ) : '';
+			$shop_page_id = wc_get_page_id( 'shop' );
+			$_name        = $shop_page_id ? get_the_title( $shop_page_id ) : '';
 
 			if ( ! $_name ) {
 				$product_post_type = get_post_type_object( 'product' );
 				$_name             = $product_post_type->labels->name;
 			}
 
-			$this->add_item( $_name, get_post_type_archive_link( 'product' ) );
+			$this->add_item( $_name, get_post_type_archive_link( 'product' ), false, [ 'type' => 'shop' ] );
 		}
 
 		/**
@@ -440,7 +504,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 
 			// If permalinks contain the shop page in the URI prepend the breadcrumb with shop.
 			if ( $shop_page_id && $shop_page && isset( $permalinks['product_base'] ) && strstr( $permalinks['product_base'], '/' . $shop_page->post_name ) && intval( get_option( 'page_on_front' ) ) !== $shop_page_id ) {
-				$this->add_item( get_the_title( $shop_page ), get_permalink( $shop_page ) );
+				$this->add_item(
+					get_the_title( $shop_page ),
+					get_permalink( $shop_page ),
+					false,
+					[
+						'type'   => 'shop',
+						'object' => $shop_page,
+					]
+				);
 			}
 		}
 
@@ -453,7 +525,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			// Add parent pages if any.
 			$this->add_parent_crumbs( $post->post_parent );
 
-			$this->add_item( get_the_title(), get_permalink(), [ 'aria-current' => 'page' ] );
+			$this->add_item(
+				get_the_title(),
+				get_permalink(),
+				[ 'aria-current' => 'page' ],
+				[
+					'type'   => 'page',
+					'object' => $post,
+				]
+			);
 		}
 
 		/**
@@ -473,7 +553,14 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 						break;
 					}
 
-					$parent_crumbs[] = array( get_the_title( $post->ID ), get_permalink( $post->ID ) );
+					$parent_crumbs[] = array(
+						get_the_title( $post->ID ),
+						get_permalink( $post->ID ),
+						[
+							'type'   => 'page' === $post->post_type ? 'page' : 'post',
+							'object' => $post,
+						],
+					);
 
 					$parent_id = $post->post_parent;
 				}
@@ -481,7 +568,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				$parent_crumbs = array_reverse( $parent_crumbs );
 
 				foreach ( $parent_crumbs as $crumb ) {
-					$this->add_item( $crumb[0], $crumb[1] );
+					$this->add_item( $crumb[0], $crumb[1], false, $crumb[2] );
 				}
 			}
 		}
@@ -493,7 +580,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			$post_type = get_post_type_object( get_post_type() );
 
 			if ( $post_type ) {
-				$this->add_item( $post_type->labels->name, get_post_type_archive_link( get_post_type() ) );
+				$this->add_item(
+					$post_type->labels->name,
+					get_post_type_archive_link( get_post_type() ),
+					false,
+					[
+						'type'   => 'post_type_archive',
+						'object' => $post_type,
+					]
+				);
 			}
 		}
 
@@ -507,7 +602,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				$this->term_ancestors( $this_category->term_id, 'category' );
 			}
 
-			$this->add_item( single_cat_title( '', false ), get_category_link( $this_category->term_id ) );
+			$this->add_item(
+				single_cat_title( '', false ),
+				get_category_link( $this_category->term_id ),
+				false,
+				[
+					'type'   => 'term',
+					'object' => $this_category,
+				]
+			);
 		}
 
 		/**
@@ -516,8 +619,16 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		protected function add_crumbs_tag() {
 			$queried_object = $GLOBALS['wp_query']->get_queried_object();
 
-			/* translators: %s: tag name */
-			$this->add_item( sprintf( __( 'Posts tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ), single_tag_title( '', false ) ), get_tag_link( $queried_object->term_id ) );
+			$this->add_item(
+				/* translators: %s: tag name */
+				sprintf( __( 'Posts tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ), single_tag_title( '', false ) ),
+				get_tag_link( $queried_object->term_id ),
+				false,
+				[
+					'type'   => 'term',
+					'object' => $queried_object,
+				]
+			);
 		}
 
 		/**
@@ -525,13 +636,13 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 */
 		protected function add_crumbs_date() {
 			if ( is_year() || is_month() || is_day() ) {
-				$this->add_item( get_the_time( 'Y' ), get_year_link( get_the_time( 'Y' ) ) );
+				$this->add_item( get_the_time( 'Y' ), get_year_link( get_the_time( 'Y' ) ), false, [ 'type' => 'date_year' ] );
 			}
 			if ( is_month() || is_day() ) {
-				$this->add_item( get_the_time( 'F' ), get_month_link( get_the_time( 'Y' ), get_the_time( 'm' ) ) );
+				$this->add_item( get_the_time( 'F' ), get_month_link( get_the_time( 'Y' ), get_the_time( 'm' ) ), false, [ 'type' => 'date_month' ] );
 			}
 			if ( is_day() ) {
-				$this->add_item( get_the_time( 'd' ) );
+				$this->add_item( get_the_time( 'd' ), '', false, [ 'type' => 'date_day' ] );
 			}
 		}
 
@@ -542,13 +653,29 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 			$this_term = $GLOBALS['wp_query']->get_queried_object();
 			$taxonomy  = get_taxonomy( $this_term->taxonomy );
 
-			$this->add_item( $taxonomy->labels->name );
+			$this->add_item(
+				$taxonomy->labels->name,
+				'',
+				false,
+				[
+					'type'   => 'taxonomy',
+					'object' => $taxonomy,
+				]
+			);
 
 			if ( 0 !== intval( $this_term->parent ) ) {
 				$this->term_ancestors( $this_term->term_id, $this_term->taxonomy );
 			}
 
-			$this->add_item( single_term_title( '', false ), get_term_link( $this_term->term_id, $this_term->taxonomy ) );
+			$this->add_item(
+				single_term_title( '', false ),
+				get_term_link( $this_term->term_id, $this_term->taxonomy ),
+				false,
+				[
+					'type'   => 'term',
+					'object' => $this_term,
+				]
+			);
 		}
 
 		/**
@@ -559,8 +686,16 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 
 			$userdata = get_userdata( $author );
 
-			/* translators: %s: author name */
-			$this->add_item( sprintf( __( 'Author: %s', 'breadcrumb-block' ), $userdata->display_name ) );
+			$this->add_item(
+				/* translators: %s: author name */
+				sprintf( __( 'Author: %s', 'breadcrumb-block' ), $userdata->display_name ),
+				'',
+				false,
+				[
+					'type'   => 'author',
+					'object' => $author,
+				]
+			);
 		}
 
 		/**
@@ -577,7 +712,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				$ancestor = get_term( $ancestor, $taxonomy );
 
 				if ( ! is_wp_error( $ancestor ) && $ancestor ) {
-					$this->add_item( $ancestor->name, get_term_link( $ancestor ) );
+					$this->add_item(
+						$ancestor->name,
+						get_term_link( $ancestor ),
+						false,
+						[
+							'type'   => 'term',
+							'object' => $ancestor,
+						]
+					);
 				}
 			}
 		}
@@ -588,7 +731,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		protected function search_trail() {
 			if ( is_search() ) {
 				/* translators: %s: search term */
-				$this->add_item( sprintf( __( 'Search results for &ldquo;%s&rdquo;', 'breadcrumb-block' ), get_search_query() ), remove_query_arg( 'paged' ) );
+				$this->add_item( sprintf( __( 'Search results for &ldquo;%s&rdquo;', 'breadcrumb-block' ), get_search_query() ), remove_query_arg( 'paged' ), false, [ 'type' => 'search' ] );
 			}
 		}
 
@@ -598,7 +741,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		protected function paged_trail() {
 			if ( get_query_var( 'paged' ) ) {
 				/* translators: %d: page number */
-				$this->add_item( sprintf( __( 'Page %d', 'breadcrumb-block' ), get_query_var( 'paged' ) ) );
+				$this->add_item( sprintf( __( 'Page %d', 'breadcrumb-block' ), get_query_var( 'paged' ) ), '', false, [ 'type' => 'paged' ] );
 			}
 		}
 
