@@ -3,8 +3,8 @@ Contributors:      Mr2P
 Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
-Tested up to:      6.4
-Stable tag:        1.0.12
+Tested up to:      6.5
+Stable tag:        1.0.13
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,23 +12,42 @@ A simple breadcrumb trail block that supports JSON-LD structured data and is com
 
 == Description ==
 
-This is a single-block plugin for the breadcrumb trail. It's simple, lightweight, SEO-friendly, and WooCommerce compatibility. It also includes some simple separator icons.
+This is a single-block plugin for the breadcrumb trail. It's simple, lightweight, SEO-friendly, and WooCommerce compatibility. It also includes some simple separator icons. It works everywhere: Page Editor, Site Editor, and template files.
 
 === How to customize the breadcrumb ===
 
-1. How to change the markup of the block?
+1. How to change/remove an item?
+
+        add_filter( 'breadcrumb_block_get_item', function ( $item_args, $context ) {
+          // Eg: remove a term.
+          if ( 'term' === $context['type'] && 'term-slug' === $context['object']->slug ) {
+            return false;
+          }
+
+          // Eg: Change the title of a page.
+          if ( 'page' === $context['type'] && page_id_to_change === $context['object']->ID ) {
+            $item_args[0] = 'Make it shorter';
+          }
+
+          return $item_args;
+        }, 10, 2 );
+
+    `$item_args` is a 3-item array: `[$item_label, $item_link, $item_attrs]`
+    `$context` is an associative array: `['type' => 'item type', 'object' => 'item object']`. `type` can be one of the following values: `front_page`, `home`, `shop`, `page`, `post`, `single`, `term`, `taxonomy`, `post_type_archive`, `search`, `404`, `paged`, `author`, `date_year`, `date_month`, `date_day`, `attachment`.
+
+2. How to change the markup of the block?
 
         add_filter( 'breadcrumb_block_get_breadcrumb_trail', function ( $markup, $args, $breadcrumbs_instance ) {
           return $markup;
         }, 10, 3 );
 
-2. How to add or remove the items from the breadcrumb trail?
+3. How to add or remove the items from the breadcrumb trail?
 
         add_filter( 'breadcrumb_block_get_items', function ( $items, $breadcrumbs_instance ) {
           return $items;
         }, 10, 2 );
 
-3. How to use a custom separator for the breadcrumb trail?
+4. How to use a custom separator for the breadcrumb trail?
 
         add_filter( 'breadcrumb_block_get_args', function ( $args ) {
           // For example, change separator.
@@ -72,6 +91,11 @@ Anyone can use this plugin.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.13 =
+*Release Date 30 April 2024*
+
+* Added - A new hook `breadcrumb_block_get_item` for customizing/removing each item of the breadcrumbs
 
 = 1.0.12 =
 *Release Date 22 September 2023*
