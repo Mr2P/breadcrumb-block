@@ -80,7 +80,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 */
 		public function add_item( $name, $link = '', $attrs = [], $context = [] ) {
 			// Allow changing the item.
-			$item = apply_filters( 'breadcrumb_block_get_item', [ wp_strip_all_tags( $name ), $link, $attrs ], $context );
+			$item = apply_filters( 'breadcrumb_block_get_item', [ wp_strip_all_tags( $name ), $link, $attrs ], $context, $this );
 
 			// Add the ability to remove an item from the crumbs.
 			if ( $item ) {
