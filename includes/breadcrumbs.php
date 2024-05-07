@@ -791,7 +791,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 */
 		public function output_structured_data() {
 			if ( $this->structured_data ) {
-				echo '<script type="application/ld+json">' . _wp_specialchars(
+				echo '<script type="application/ld+json">' . _wp_specialchars( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					wp_json_encode( $this->structured_data ),
 					ENT_NOQUOTES,  // ENT_QUOTES, Escape quotes in attribute nodes only.
 					'UTF-8',       // json_encode() outputs UTF-8 (really just ASCII), not the blog's charset.
