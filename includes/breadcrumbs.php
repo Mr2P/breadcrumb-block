@@ -357,6 +357,9 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				$permalink = get_permalink( $post );
 			}
 
+			// Allow adding items at the start of the single item.
+			do_action( 'breadcrumb_block_single_prepend', $post, $this );
+
 			if ( 'product' === get_post_type( $post ) ) {
 				$this->prepend_shop_page();
 
@@ -406,8 +409,6 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 
 				// If the post has a parent, follow the parent trail.
 				$this->add_parent_crumbs( $post->post_parent );
-
-				do_action( 'breadcrumb_block_single_' . $post_type->name, $post, $this );
 			} else {
 				$cats = get_the_category( $post );
 				if ( $cats ) {
@@ -424,6 +425,13 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 					);
 				}
 			}
+
+			// Allow adding items right before the current item.
+			// General hook.
+			do_action( 'breadcrumb_block_single', $post, $this );
+
+			// With post type name.
+			do_action( 'breadcrumb_block_single_' . $post->post_type, $post, $this );
 
 			$this->add_item(
 				get_the_title( $post ),
