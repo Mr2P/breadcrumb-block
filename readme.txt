@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
 Tested up to:      6.5
-Stable tag:        1.0.13
+Stable tag:        1.0.14
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,22 +18,27 @@ This is a single-block plugin for the breadcrumb trail. It's simple, lightweight
 
 1. How to change/remove an item?
 
-        add_filter( 'breadcrumb_block_get_item', function ( $item_args, $context ) {
+        add_filter( 'breadcrumb_block_get_item', function ( $item_args, $context, $breadcrumbs_instance ) {
+          // Ignore items without context.
+          if ( ! $context || ! ( $context['object'] ?? false ) ) {
+            return $item_args;
+          }
+
           // Eg: remove a term.
-          if ( 'term' === $context['type'] && 'term-slug' === $context['object']->slug ) {
+          if ( 'term' === ( $context['type'] ?? '' ) && 'term-slug' === $context['object']->slug ) {
             return false;
           }
 
           // Eg: Change the title of a page.
-          if ( 'page' === $context['type'] && page_id_to_change === $context['object']->ID ) {
+          if ( 'page' === ( $context['type'] ?? '' ) && page_id_to_change === $context['object']->ID ) {
             $item_args[0] = 'Make it shorter';
           }
 
           return $item_args;
-        }, 10, 2 );
+        }, 10, 3 );
 
-    `$item_args` is a 3-item array: `[$item_label, $item_link, $item_attrs]`
-    `$context` is an associative array: `['type' => 'item type', 'object' => 'item object']`. `type` can be one of the following values: `front_page`, `home`, `shop`, `page`, `post`, `single`, `term`, `taxonomy`, `post_type_archive`, `search`, `404`, `paged`, `author`, `date_year`, `date_month`, `date_day`, `attachment`.
+    $item_args is a 3-item array: `[$item_label, $item_link, $item_attrs]`
+    $context is an associative array: `['type' => 'item type', 'object' => 'item object']`. `type` can be one of the following values: `front_page`, `home`, `shop`, `page`, `post`, `single`, `term`, `taxonomy`, `post_type_archive`, `search`, `404`, `paged`, `author`, `date_year`, `date_month`, `date_day`, `attachment`.
 
 2. How to change the markup of the block?
 
@@ -57,6 +62,17 @@ This is a single-block plugin for the breadcrumb trail. It's simple, lightweight
 
     The custom separator should be an inline SVG. To make sure it displays properly, it should have three attributes: width, height, and fill. The values of these attributes should be as follows: `fill="currentColor" width="1em" height="1em"`.
     Using this hook, you can customize other attributes such as container, before, after, list_tag, item_tag, item_before, item_after, separator.
+
+5. How to prepend the blog page to all single posts?
+
+        add_action( 'breadcrumb_block_single_prepend', function ( $post, $breadcrumbs_instance ) {
+          if ( 'post' === $post->post_type ) {
+            $blog_id = get_option( 'page_for_posts');
+            if ( $blog_id ) {
+              $breadcrumbs_instance->add_item( get_the_title( $blog_id ), get_permalink( $blog_id ) );
+            }
+          }
+        }, 10, 2 );
 
 If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/breadcrumb-block/reviews/#new-post) on WordPress.org to help us spread the word. I would very much appreciate it.
 
@@ -92,18 +108,25 @@ Anyone can use this plugin.
 
 == Changelog ==
 
+= 1.0.14 =
+*Release Date - 07 May 2024*
+
+* Added    - Add the breadcrumbs instance to the `breadcrumb_block_get_item` hook
+* Added    - Add the new hook `breadcrumb_block_single_prepend`
+* Improved - Add the commented text to remove the output not escaped warning
+
 = 1.0.13 =
-*Release Date 30 April 2024*
+*Release Date - 30 April 2024*
 
 * Added - A new hook `breadcrumb_block_get_item` for customizing/removing each item of the breadcrumbs
 
 = 1.0.12 =
-*Release Date 22 September 2023*
+*Release Date - 22 September 2023*
 
 * Added - A new hook `breadcrumb_block_get_args` for customizing the output of the breadcrumb.
 
 = 1.0.11 =
-*Release Date 12 August 2023*
+*Release Date - 12 August 2023*
 
 * DEV - Refactor block metadata and upgrade to apiVerion 3
 * DEV - Add a hook `apply_filters( 'breadcrumb_block_strip_shortcodes', false, $breadcrumb_instance )` to allow opt-in/opt-out shortcodes in the post title. Thanks to Steven A. Zahm (https://github.com/shazahm1)
@@ -112,60 +135,60 @@ Anyone can use this plugin.
 * Fix - Conflict style with Bootstrap's breadcrumb
 
 = 1.0.10 =
-*Release Date 13 Apr 2023*
+*Release Date - 13 Apr 2023*
 
 * DEV - Add a setting to input a custom home text
 
 = 1.0.9 =
-*Release Date 24 Mar 2023*
+*Release Date - 24 Mar 2023*
 
 * FIX - Error converting WP_Post_Type to string. Thanks to @tnchuntic for reporting it.
 
 = 1.0.8 =
-*Release Date 20 Mar 2023*
+*Release Date - 20 Mar 2023*
 
 * DEV - Make the block compatible with woocommerce
 
 = 1.0.7 =
-*Release Date 11 Mar 2023*
+*Release Date - 11 Mar 2023*
 
 * FIX - Add namespace to class_exists check
 
 = 1.0.6 =
-*Release Date 12 Feb 2023*
+*Release Date - 12 Feb 2023*
 
 * Add new hooks `breadcrumb_block_home_text`, `breadcrumb_block_home_url`
 
 = 1.0.5 =
-*Release Date 05 Feb 2023*
+*Release Date - 05 Feb 2023*
 
 * DEV - Add a setting to hide the home page link
 
 = 1.0.4 =
-*Release Date 19 Jan 2023*
+*Release Date - 19 Jan 2023*
 
 * FIX - Gap issue: adding the semicolon to the CSS variable
 * FIX - Could not modify breadcrumb data via the `breadcrumb_block_get_items` filter
 * DEV - Add a new arrow icon as a separator
 
 = 1.0.3 =
-*Release Date 13 Dec 2022*
+*Release Date - 13 Dec 2022*
 
 * DEV - Use post_type->labels->name instead of post_type->labels->singular_name for custom post type archive name
 * DEV - Add http://schema.org as @context for structured data
 * Note: Big thanks to [Yannick](https://wordpress.org/support/users/ja4st3r) for this release
 
 = 1.0.2 =
-*Release Date 08 Dec 2022*
+*Release Date - 08 Dec 2022*
 
 * DEV - Add a setting to hide the current page title
 
 = 1.0.1 =
-*Release Date 01 Dec 2022*
+*Release Date - 01 Dec 2022*
 
 * FIX - Syntax error on PHP version 7.0.0
 
 = 1.0.0 =
-*Release Date 22 Oct 2022*
+*Release Date - 22 Oct 2022*
 
 
