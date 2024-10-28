@@ -68,6 +68,9 @@
         "lineHeight": true,
         "fontAppearance": true,
         "textTransform": true
+      },
+      "interactivity": {
+        "clientNavigation": true
       }
     }
   },
