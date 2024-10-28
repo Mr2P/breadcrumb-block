@@ -471,8 +471,8 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 
 			$this->prepend_shop_page();
 
-			/* translators: %s: product tag */
 			$this->add_item(
+				/* translators: %s: product tag */
 				sprintf( __( 'Products tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ), $current_term->name ),
 				get_term_link( $current_term, 'product_tag' ),
 				false,
