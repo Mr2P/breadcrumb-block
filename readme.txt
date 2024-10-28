@@ -3,10 +3,11 @@ Contributors:      Mr2P
 Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0.0
 Requires at least: 5.9.0
-Tested up to:      6.5
-Stable tag:        1.0.14
+Tested up to:      6.7
+Stable tag:        1.0.15
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+Donate link:       https://boldblocks.net?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Breadcrumb+Block+Donate
 
 A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with Woocommerce
 
@@ -78,13 +79,13 @@ If this plugin is useful for you, please do a quick review and [rate it](https:/
 
 Please check out my other plugins if you're interested:
 
-* [Content Blocks Builder](https://wordpress.org/plugins/content-blocks-builder) - A tool to create blocks, patterns or variations easily for your site directly on the Block Editor.
-* [Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block) - A block to display a meta field or an ACF field as a block. It can also be used in the Query Loop block.
-* [Block Enhancements](https://wordpress.org/plugins/block-enhancements) - A plugin to add more useful features to blocks like icons, box-shadow, transform, hover style...
-* [Icon Separator](https://wordpress.org/plugins/icon-separator) - A tiny block just like the core/separator block but with the ability to add an icon to it.
-* [SVG Block](https://wordpress.org/plugins/svg-block) - A block to insert inline SVG images easily and safely. It also bundles with more than 3000 icons and some common non-rectangular dividers.
-* [Counting Number Block](https://wordpress.org/plugins/counting-number-block) - A block to display a number that has the number-counting effect.
-* [Better Youtube Embed Block](https://wordpress.org/plugins/better-youtube-embed-block) - Embed Youtube videos without slowing down your site.
+- **[Content Blocks Builder](https://wordpress.org/plugins/content-blocks-builder)** - This plugin turns the Block Editor into a powerful page builder by allowing you to create blocks, variations, and patterns directly in the Block Editor without needing a code editor.
+- **[Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block)** - A block to display custom fields as blocks on the front end. It supports custom fields for posts, terms, users, and setting fields. It can also be used in the Query Loop block.
+- **[SVG Block](https://wordpress.org/plugins/svg-block)** - A block to display SVG images as blocks. Useful for images, icons, dividers, and buttons. It allows you to upload SVG images and load them into the icon library.
+- **[Icon separator](https://wordpress.org/plugins/icon-separator)** - A tiny block just like the core/separator block but with the ability to add an icon.
+- **[Block Enhancements](https://wordpress.org/plugins/block-enhancements)** - Adds practical features to blocks like icons, box shadows, transforms, etc.
+- **[Counting Number Block](https://wordpress.org/plugins/counting-number-block)** - A block to display numbers with a counting effect
+- **[Better YouTube Embed Block](https://wordpress.org/plugins/better-youtube-embed-block)** - A block to solve the performance issue with embedded YouTube videos. It can also embed multiple videos and playlists.
 
 The plugin is developed using @wordpress/create-block.
 
@@ -106,7 +107,16 @@ Anyone can use this plugin.
 
 == Screenshots ==
 
+1. Block settings
+
 == Changelog ==
+
+= 1.0.15 =
+*Release Date - 28 October 2024*
+
+* Added   - Support clientNavigation interactivity
+* Updated - Replace classnames with clsx
+* Updated - Tested up to WP 6.7
 
 = 1.0.14 =
 *Release Date - 07 May 2024*

@@ -35,5 +35,9 @@ vendor/
 # WordPress coding standard
 wpcs
 
+# Source map
+*.js.map
+*.css.map
+
 # junks
 .DS_Store

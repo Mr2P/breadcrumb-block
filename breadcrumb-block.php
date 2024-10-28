@@ -4,9 +4,11 @@
  * Description:       A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with Woocommerce
  * Requires at least: 5.8
  * Requires PHP:      7.0
- * Version:           1.0.14
+ * Version:           1.0.15
  * Author:            Phi Phan
  * Author URI:        https://boldblocks.net
+ * Plugin URI:        https://boldblocks.net?utm_source=Breadcrumb+Block&utm_campaign=visit+site&utm_medium=link&utm_content=Plugin+URI
+ * License:           GPL-2.0-or-later
  *
  * @package BoldBlocks
  * @copyright Copyright(c) 2022, Phi Phan

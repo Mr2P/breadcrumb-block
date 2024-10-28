@@ -1,6 +1,6 @@
 {
   "name": "breadcrumb-block",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "A simple breadcrumb trail block that supports JSON-LD structured data",
   "author": "Phi Phan",
   "license": "GPL-2.0-or-later",
@@ -20,9 +20,9 @@
     "make-pot": "wp i18n make-pot . languages/breadcrumb-block.pot"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^24.2.0"
+    "@wordpress/scripts": "^27.5.0"
   },
   "dependencies": {
-    "classnames": "^2.3.2"
+    "clsx": "^2.1.1"
   }
 }
