@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import classnames from "classnames";
+import clsx from "clsx";
 
 /**
  * WordPress dependencies
@@ -131,7 +131,7 @@ export default function Edit({
                             {label}
                           </Button>
                         );
-                      }
+                      },
                     )}
                   </ButtonGroup>
                 </div>
@@ -147,7 +147,7 @@ export default function Edit({
                     onChange={(value) => setAttributes({ homeText: value })}
                     help={__(
                       "Input a custom home text. Leave it blank to use the default text.",
-                      "breadcrumb-block"
+                      "breadcrumb-block",
                     )}
                   />
                 )}
@@ -168,7 +168,7 @@ export default function Edit({
           style: {
             "--bb--crumb-gap": gap,
           },
-          className: classnames({
+          className: clsx({
             "hide-current-page": hideCurrentPage,
             "hide-home-page": hideHomePage,
           }),
