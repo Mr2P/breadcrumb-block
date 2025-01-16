@@ -190,7 +190,7 @@ export default function Edit({
             <li className="breadcrumb-item breadcrumb-item--parent">
               <a href="#">
                 <span className="breadcrumb-item-name">
-                  {__("Placeholder parent", "breadcrumb-block")}
+                  {__("Parent page", "breadcrumb-block")}
                 </span>
               </a>
               <span
@@ -200,7 +200,7 @@ export default function Edit({
             </li>
             <li className="breadcrumb-item breadcrumb-item--current">
               <span className="breadcrumb-item-name">
-                {__("Placeholder title", "breadcrumb-block")}
+                {__("Current page", "breadcrumb-block")}
               </span>
             </li>
           </ol>

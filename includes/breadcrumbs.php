@@ -47,7 +47,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		private static $instance;
 
 		/**
-		 * A placeholder constructor
+		 * The constructor
 		 */
 		private function __construct() {
 			// Generate structured data.
