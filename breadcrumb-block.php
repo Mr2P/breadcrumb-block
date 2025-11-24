@@ -2,9 +2,9 @@
 /**
  * Plugin Name:       Breadcrumb Block
  * Description:       A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with Woocommerce
- * Requires at least: 5.8
+ * Requires at least: 5.9
  * Requires PHP:      7.0
- * Version:           1.0.16
+ * Version:           1.1.0
  * Author:            Phi Phan
  * Author URI:        https://boldblocks.net
  * Plugin URI:        https://boldblocks.net?utm_source=Breadcrumb+Block&utm_campaign=visit+site&utm_medium=link&utm_content=Plugin+URI

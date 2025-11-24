@@ -1,10 +1,10 @@
 === Breadcrumb Block ===
 Contributors:      Mr2P
 Tags:              breadcrumb, block, Gutenberg, navigation, menu
-Requires PHP:      7.0.0
-Requires at least: 5.9.0
-Tested up to:      6.7
-Stable tag:        1.0.16
+Requires PHP:      7.0
+Requires at least: 5.9
+Tested up to:      6.9
+Stable tag:        1.1.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Donate link:       https://boldblocks.net?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Breadcrumb+Block+Donate
@@ -91,7 +91,7 @@ The plugin is developed using @wordpress/create-block.
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/breadcrumb-block` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins` directory, or install the plugin through the WordPress plugins screen directly.
 1. Activate the plugin through the 'Plugins' screen in WordPress
 
 
@@ -110,6 +110,13 @@ Anyone can use this plugin.
 1. Block settings
 
 == Changelog ==
+
+= 1.1.0 =
+*Release Date - 24 November 2025*
+
+* Improved - Revamped inspector settings and added more sepaprator icons
+* Added    - UI for inputting labels
+* Added    - Support for shadow
 
 = 1.0.16 =
 *Release Date - 16 January 2025*

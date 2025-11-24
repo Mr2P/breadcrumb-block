@@ -29,10 +29,7 @@
     },
     "labels": {
       "type": "object",
-      "default": {
-        "home": "",
-        "error404": ""
-      }
+      "default": {}
     }
   },
   "supports": {
