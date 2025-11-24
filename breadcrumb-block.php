@@ -43,12 +43,16 @@ add_action( 'init', __NAMESPACE__ . '\\breadcrumb_block_block_init' );
  * @return string
  */
 function breadcrumb_block_render_block( $attributes, $content, $block ) {
+	// Get labels.
+	$labels = $attributes['labels'] ?? [];
+	if ( ! empty( $attributes['homeText'] ) && empty( $labels['home'] ) ) {
+		$labels['home'] = $attributes['homeText'];
+	}
+
 	$content = Breadcrumbs::get_instance()->get_breadcrumb_trail(
 		[
 			'separator' => $attributes['separator'] ?? '',
-			'labels'    => [
-				'home' => $attributes['homeText'] ?? '',
-			],
+			'labels'    => $labels,
 		]
 	);
 

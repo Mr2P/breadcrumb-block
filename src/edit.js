@@ -9,14 +9,15 @@ import clsx from "clsx";
 import { __ } from "@wordpress/i18n";
 import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
 import {
-  PanelBody,
-  Button,
-  ButtonGroup,
-  BaseControl,
   ToggleControl,
   TextControl,
   __experimentalUnitControl as UnitControl,
+  __experimentalToggleGroupControl as ToggleGroupControl,
+  __experimentalToggleGroupControlOption as ToggleGroupControlOption,
+  __experimentalToolsPanel as ToolsPanel,
+  __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
+import { useEffect } from "@wordpress/element";
 
 /**
  * Style
@@ -32,12 +33,29 @@ import "./editor.scss";
  * @return {WPElement} Element to render.
  */
 export default function Edit({
-  attributes: { gap, separator, hideHomePage, hideCurrentPage, homeText },
+  attributes: {
+    gap = ".4em",
+    separator,
+    hideHomePage,
+    hideCurrentPage,
+    homeText,
+    labels = {},
+  },
   setAttributes,
   isSelected,
 }) {
+  // Migrate homeText to labels.home
+  useEffect(() => {
+    if (homeText && !labels?.home) {
+      setAttributes({ homeText: "", labels: { ...labels, home: homeText } });
+    }
+  }, []);
+
   const separatorOptions = [
     { label: "/", value: "/" },
+    { label: "•", value: "•" },
+    { label: "→", value: "→" },
+    { label: "‣", value: "‣" },
     {
       label: (
         <svg
@@ -93,73 +111,261 @@ export default function Edit({
     </svg>`,
     },
   ];
+
+  const gapLabel = __("Gap", "breadcrumb-block");
+  const separatorLabel = __("Separator", "breadcrumb-block");
+  const hideHomePageLabel = __("Hide home page link", "breadcrumb-block");
+  const currentPageLabel = __("Hide current page link", "breadcrumb-block");
+  const homeLabel = __("Home", "breadcrumb-block");
+  const error404Label = __("Page not found", "breadcrumb-block");
+  const searchResultLabel = __("Search results", "breadcrumb-block");
+  const postsTaggedLabel = __("Posts tagged", "breadcrumb-block");
+  const authorLabel = __("Author", "breadcrumb-block");
+  const pageLabel = __("Page", "breadcrumb-block");
+  const productsTaggedLabel = __("Products tagged", "breadcrumb-block");
   return (
     <>
       {isSelected && (
         <>
           <InspectorControls>
-            <PanelBody title={__("Block settings", "breadcrumb-block")}>
-              <div className="breadrumb-setings">
+            <ToolsPanel
+              label={__("Block settings", "breadcrumb-block")}
+              resetAll={() => {
+                setAttributes({
+                  gap: ".4em",
+                  separator: "/",
+                  hideHomePage: false,
+                  hideCurrentPage: false,
+                  homeText: "",
+                });
+              }}
+            >
+              <ToolsPanelItem
+                label={gapLabel}
+                hasValue={() => gap !== ".4em"}
+                onDeselect={() =>
+                  setAttributes({
+                    gap: ".4em",
+                  })
+                }
+                isShownByDefault={true}
+              >
                 <UnitControl
-                  label={__("Gap", "breadcrumb-block")}
+                  label={gapLabel}
                   value={gap}
                   onChange={(gap) => setAttributes({ gap })}
                 />
-                <div className="toggle-group-control">
-                  <BaseControl
-                    className="toggle-group-control__label"
-                    label={__("Separator", "breadcrumb-block")}
-                  />
-                  <ButtonGroup
-                    aria-label={__("Separator icon", "breadcrumb-block")}
-                  >
-                    {separatorOptions.map(
-                      ({ label, value: optionValue, disabled = false }) => {
-                        return (
-                          <Button
-                            key={optionValue}
-                            isSmall
-                            variant={
-                              optionValue === separator ? "primary" : undefined
-                            }
-                            onClick={() =>
-                              setAttributes({ separator: optionValue })
-                            }
-                            style={{ verticalAlign: "top" }}
-                            disabled={disabled}
-                          >
-                            {label}
-                          </Button>
-                        );
-                      },
-                    )}
-                  </ButtonGroup>
-                </div>
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={separatorLabel}
+                hasValue={() => separator !== "/"}
+                onDeselect={() =>
+                  setAttributes({
+                    separator: "/",
+                  })
+                }
+                isShownByDefault={true}
+              >
+                <ToggleGroupControl
+                  label={separatorLabel}
+                  value={separator}
+                  onChange={(separator) => setAttributes({ separator })}
+                  isBlock
+                  className="separator-toggle"
+                >
+                  {separatorOptions.map(({ label, value }) => (
+                    <ToggleGroupControlOption
+                      key={value}
+                      value={value}
+                      label={label}
+                    />
+                  ))}
+                </ToggleGroupControl>
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={hideHomePageLabel}
+                hasValue={() => !!hideHomePage}
+                onDeselect={() =>
+                  setAttributes({
+                    hideHomePage: false,
+                  })
+                }
+                isShownByDefault={true}
+              >
                 <ToggleControl
-                  label={__("Hide the home page", "breadcrumb-block")}
+                  label={hideHomePageLabel}
                   checked={hideHomePage}
-                  onChange={(value) => setAttributes({ hideHomePage: value })}
+                  onChange={(hideHomePage) => setAttributes({ hideHomePage })}
                 />
-                {!hideHomePage && (
-                  <TextControl
-                    label={__("Custom home text", "breadcrumb-block")}
-                    value={homeText}
-                    onChange={(value) => setAttributes({ homeText: value })}
-                    help={__(
-                      "Input a custom home text. Leave it blank to use the default text.",
-                      "breadcrumb-block",
-                    )}
-                  />
-                )}
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={currentPageLabel}
+                hasValue={() => !!hideCurrentPage}
+                onDeselect={() =>
+                  setAttributes({
+                    hideCurrentPage: false,
+                  })
+                }
+                isShownByDefault={true}
+              >
                 <ToggleControl
-                  label={__("Hide current page", "breadcrumb-block")}
+                  label={currentPageLabel}
                   checked={hideCurrentPage}
                   onChange={(value) =>
                     setAttributes({ hideCurrentPage: value })
                   }
                 />
-              </div>
-            </PanelBody>
+              </ToolsPanelItem>
+            </ToolsPanel>
+            <ToolsPanel
+              label={__("Labels", "breadcrumb-block")}
+              resetAll={() => {
+                setAttributes({
+                  labels: {
+                    home: "",
+                    error404: "",
+                    searchResult: "",
+                  },
+                });
+              }}
+            >
+              <ToolsPanelItem
+                label={homeLabel}
+                hasValue={() => !!labels?.home}
+                onDeselect={() =>
+                  setAttributes({
+                    labels: { ...labels, home: "" },
+                  })
+                }
+              >
+                <TextControl
+                  label={homeLabel}
+                  value={labels?.home || ""}
+                  onChange={(home) =>
+                    setAttributes({ labels: { ...labels, home } })
+                  }
+                  placeholder={homeLabel}
+                  autoComplete="off"
+                />
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={error404Label}
+                hasValue={() => !!labels?.error404}
+                onDeselect={() =>
+                  setAttributes({
+                    labels: { ...labels, error404: "" },
+                  })
+                }
+              >
+                <TextControl
+                  label={error404Label}
+                  value={labels?.error404 || ""}
+                  onChange={(error404) =>
+                    setAttributes({ labels: { ...labels, error404 } })
+                  }
+                  placeholder={error404Label}
+                  autoComplete="off"
+                />
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={searchResultLabel}
+                hasValue={() => !!labels?.searchResult}
+                onDeselect={() =>
+                  setAttributes({
+                    labels: { ...labels, searchResult: "" },
+                  })
+                }
+              >
+                <TextControl
+                  label={searchResultLabel}
+                  value={labels?.searchResult || ""}
+                  onChange={(searchResult) =>
+                    setAttributes({ labels: { ...labels, searchResult } })
+                  }
+                  placeholder={__(
+                    'Search results for "%s"',
+                    "breadcrumb-block",
+                  )}
+                  autoComplete="off"
+                />
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={postsTaggedLabel}
+                hasValue={() => !!labels?.postsTagged}
+                onDeselect={() =>
+                  setAttributes({
+                    labels: { ...labels, postsTagged: "" },
+                  })
+                }
+              >
+                <TextControl
+                  label={postsTaggedLabel}
+                  value={labels?.postsTagged || ""}
+                  onChange={(postsTagged) =>
+                    setAttributes({ labels: { ...labels, postsTagged } })
+                  }
+                  placeholder={__('Posts tagged "%s"', "breadcrumb-block")}
+                  autoComplete="off"
+                />
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={authorLabel}
+                hasValue={() => !!labels?.author}
+                onDeselect={() =>
+                  setAttributes({
+                    labels: { ...labels, author: "" },
+                  })
+                }
+              >
+                <TextControl
+                  label={authorLabel}
+                  value={labels?.author || ""}
+                  onChange={(author) =>
+                    setAttributes({ labels: { ...labels, author } })
+                  }
+                  placeholder={__('Author: "%s"', "breadcrumb-block")}
+                  autoComplete="off"
+                />
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={pageLabel}
+                hasValue={() => !!labels?.page}
+                onDeselect={() =>
+                  setAttributes({
+                    labels: { ...labels, page: "" },
+                  })
+                }
+              >
+                <TextControl
+                  label={pageLabel}
+                  value={labels?.page || ""}
+                  onChange={(page) =>
+                    setAttributes({ labels: { ...labels, page } })
+                  }
+                  placeholder={__("Page %d", "breadcrumb-block")}
+                  autoComplete="off"
+                />
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={productsTaggedLabel}
+                hasValue={() => !!labels?.productsTagged}
+                onDeselect={() =>
+                  setAttributes({
+                    labels: { ...labels, productsTagged: "" },
+                  })
+                }
+              >
+                <TextControl
+                  label={productsTaggedLabel}
+                  value={labels?.productsTagged || ""}
+                  onChange={(productsTagged) =>
+                    setAttributes({ labels: { ...labels, productsTagged } })
+                  }
+                  placeholder={__('Products tagged "%s"', "breadcrumb-block")}
+                  autoComplete="off"
+                />
+              </ToolsPanelItem>
+            </ToolsPanel>
           </InspectorControls>
         </>
       )}
@@ -179,7 +385,7 @@ export default function Edit({
             <li className="breadcrumb-item breadcrumb-item--home">
               <a href="#">
                 <span className="breadcrumb-item-name">
-                  {homeText ? homeText : __("Home", "breadcrumb-block")}
+                  {labels?.home ? labels.home : __("Home", "breadcrumb-block")}
                 </span>
               </a>
               <span

@@ -185,7 +185,57 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 				]
 			);
 
+			// Parse labels.
+			$this->args['labels'] = $this->parse_labels( $this->args['labels'] );
+
 			return apply_filters( 'breadcrumb_block_get_args', $this->args );
+		}
+
+		/**
+		 * Parse labels
+		 *
+		 * @param array $labels
+		 * @return array
+		 */
+		private function parse_labels( $labels ) {
+			$default_labels = [
+				'home'           => __( 'Home', 'breadcrumb-block' ),
+				'error404'       => __( 'Page not found', 'breadcrumb-block' ),
+				/* translators: %s: search term */
+				'searchResult'   => __( 'Search results for &ldquo;%s&rdquo;', 'breadcrumb-block' ),
+				/* translators: %s: tag name */
+				'postsTagged'    => __( 'Posts tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ),
+				/* translators: %s: author name */
+				'author'         => __( 'Author: %s', 'breadcrumb-block' ),
+				/* translators: %d: page number */
+				'page'           => __( 'Page %d', 'breadcrumb-block' ),
+				/* translators: %s: product tag */
+				'productsTagged' => __( 'Products tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ),
+			];
+
+			if ( empty( $labels['home'] ) ) {
+				$labels['home'] = $default_labels['home'];
+			}
+			if ( empty( $labels['error404'] ) ) {
+				$labels['error404'] = $default_labels['error404'];
+			}
+			if ( empty( $labels['searchResult'] ) ) {
+				$labels['searchResult'] = $default_labels['searchResult'];
+			}
+			if ( empty( $labels['postsTagged'] ) ) {
+				$labels['postsTagged'] = $default_labels['postsTagged'];
+			}
+			if ( empty( $labels['author'] ) ) {
+				$labels['author'] = $default_labels['author'];
+			}
+			if ( empty( $labels['page'] ) ) {
+				$labels['page'] = $default_labels['page'];
+			}
+			if ( empty( $labels['productsTagged'] ) ) {
+				$labels['productsTagged'] = $default_labels['productsTagged'];
+			}
+
+			return $labels;
 		}
 
 		/**
@@ -303,9 +353,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 * Front page trail.
 		 */
 		protected function add_crumbs_front_page() {
-			$home_label = $this->args['labels']['home'] ?? '';
-			$home_text  = apply_filters( 'breadcrumb_block_home_text', empty( $home_label ) ? __( 'Home', 'breadcrumb-block' ) : $home_label );
-			$this->add_item( $home_text, esc_url( user_trailingslashit( apply_filters( 'breadcrumb_block_home_url', home_url() ) ) ), [ 'rel' => 'home' ], [ 'type' => 'front_page' ] );
+			$this->add_item( apply_filters( 'breadcrumb_block_home_text', $this->args['labels']['home'] ), esc_url( user_trailingslashit( apply_filters( 'breadcrumb_block_home_url', home_url() ) ) ), [ 'rel' => 'home' ], [ 'type' => 'front_page' ] );
 		}
 
 		/**
@@ -319,7 +367,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 * 404 trail.
 		 */
 		protected function add_crumbs_404() {
-			$this->add_item( __( 'Error 404', 'breadcrumb-block' ), '', [ 'aria-current' => 'page' ], [ 'type' => '404' ] );
+			$this->add_item( $this->args['labels']['error404'], '', [ 'aria-current' => 'page' ], [ 'type' => '404' ] );
 		}
 
 		/**
@@ -473,7 +521,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 
 			$this->add_item(
 				/* translators: %s: product tag */
-				sprintf( __( 'Products tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ), $current_term->name ),
+				sprintf( $this->args['labels']['productsTagged'], $current_term->name ),
 				get_term_link( $current_term, 'product_tag' ),
 				false,
 				[
@@ -629,7 +677,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 
 			$this->add_item(
 				/* translators: %s: tag name */
-				sprintf( __( 'Posts tagged &ldquo;%s&rdquo;', 'breadcrumb-block' ), single_tag_title( '', false ) ),
+				sprintf( $this->args['labels']['postsTagged'], single_tag_title( '', false ) ),
 				get_tag_link( $queried_object->term_id ),
 				false,
 				[
@@ -696,7 +744,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 
 			$this->add_item(
 				/* translators: %s: author name */
-				sprintf( __( 'Author: %s', 'breadcrumb-block' ), $userdata->display_name ),
+				sprintf( $this->args['labels']['author'], $userdata->display_name ),
 				'',
 				false,
 				[
@@ -738,8 +786,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		 */
 		protected function search_trail() {
 			if ( is_search() ) {
-				/* translators: %s: search term */
-				$this->add_item( sprintf( __( 'Search results for &ldquo;%s&rdquo;', 'breadcrumb-block' ), get_search_query() ), remove_query_arg( 'paged' ), false, [ 'type' => 'search' ] );
+				$this->add_item( sprintf( $this->args['labels']['searchResult'], get_search_query() ), remove_query_arg( 'paged' ), false, [ 'type' => 'search' ] );
 			}
 		}
 
@@ -749,7 +796,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		protected function paged_trail() {
 			if ( get_query_var( 'paged' ) ) {
 				/* translators: %d: page number */
-				$this->add_item( sprintf( __( 'Page %d', 'breadcrumb-block' ), get_query_var( 'paged' ) ), '', false, [ 'type' => 'paged' ] );
+				$this->add_item( sprintf( $this->args['labels']['page'], get_query_var( 'paged' ) ), '', false, [ 'type' => 'paged' ] );
 			}
 		}
 
@@ -818,4 +865,3 @@ if ( ! class_exists( Breadcrumbs::class ) ) :
 		}
 	}
 endif;
-

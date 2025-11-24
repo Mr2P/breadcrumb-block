@@ -6,24 +6,12 @@
 
 @import "./style.scss";
 
-.breadrumb-setings {
-  > * {
-    margin-bottom: 16px;
-  }
+.wp-block-boldblocks-breadcrumb-block a {
+  pointer-events: none;
+}
 
-  .toggle-group-control {
-    .components-button {
-      display: inline-flex;
-      justify-content: center;
-      min-width: 24px;
-    }
-
-    &__label {
-      margin-bottom: 0;
-
-      .components-base-control__field {
-        margin-bottom: 0;
-      }
-    }
+.separator-toggle {
+  button[aria-checked="false"] {
+    color: #000;
   }
 }
