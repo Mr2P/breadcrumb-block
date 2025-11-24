@@ -26,6 +26,13 @@
     "homeText": {
       "type": "string",
       "default": ""
+    },
+    "labels": {
+      "type": "object",
+      "default": {
+        "home": "",
+        "error404": ""
+      }
     }
   },
   "supports": {
@@ -54,6 +61,7 @@
       "width": true,
       "__experimentalDefaultControls": false
     },
+    "shadow": true,
     "typography": {
       "fontSize": true,
       "lineHeight": true,
