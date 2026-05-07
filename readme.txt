@@ -3,8 +3,8 @@ Contributors:      Mr2P
 Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      7.0
 Requires at least: 5.9
-Tested up to:      6.9
-Stable tag:        1.1.0
+Tested up to:      7.0
+Stable tag:        1.1.1
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Donate link:       https://boldblocks.net?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Breadcrumb+Block+Donate
@@ -110,6 +110,11 @@ Anyone can use this plugin.
 1. Block settings
 
 == Changelog ==
+
+= 1.1.1 =
+*Release Date - 07 May 2026*
+
+* Improved - Updated instpector control style
 
 = 1.1.0 =
 *Release Date - 24 November 2025*
