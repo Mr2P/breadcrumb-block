@@ -154,6 +154,7 @@ export default function Edit({
                   label={gapLabel}
                   value={gap}
                   onChange={(gap) => setAttributes({ gap })}
+                  __next40pxDefaultSize
                 />
               </ToolsPanelItem>
               <ToolsPanelItem
@@ -172,12 +173,14 @@ export default function Edit({
                   onChange={(separator) => setAttributes({ separator })}
                   isBlock
                   className="separator-toggle"
+                  __next40pxDefaultSize
                 >
                   {separatorOptions.map(({ label, value }) => (
                     <ToggleGroupControlOption
                       key={value}
                       value={value}
                       label={label}
+                      __next40pxDefaultSize
                     />
                   ))}
                 </ToggleGroupControl>
@@ -246,6 +249,7 @@ export default function Edit({
                   }
                   placeholder={homeLabel}
                   autoComplete="off"
+                  __next40pxDefaultSize
                 />
               </ToolsPanelItem>
               <ToolsPanelItem
@@ -265,6 +269,7 @@ export default function Edit({
                   }
                   placeholder={error404Label}
                   autoComplete="off"
+                  __next40pxDefaultSize
                 />
               </ToolsPanelItem>
               <ToolsPanelItem
@@ -287,6 +292,7 @@ export default function Edit({
                     "breadcrumb-block",
                   )}
                   autoComplete="off"
+                  __next40pxDefaultSize
                 />
               </ToolsPanelItem>
               <ToolsPanelItem
@@ -306,6 +312,7 @@ export default function Edit({
                   }
                   placeholder={__('Posts tagged "%s"', "breadcrumb-block")}
                   autoComplete="off"
+                  __next40pxDefaultSize
                 />
               </ToolsPanelItem>
               <ToolsPanelItem
@@ -325,6 +332,7 @@ export default function Edit({
                   }
                   placeholder={__('Author: "%s"', "breadcrumb-block")}
                   autoComplete="off"
+                  __next40pxDefaultSize
                 />
               </ToolsPanelItem>
               <ToolsPanelItem
@@ -344,6 +352,7 @@ export default function Edit({
                   }
                   placeholder={__("Page %d", "breadcrumb-block")}
                   autoComplete="off"
+                  __next40pxDefaultSize
                 />
               </ToolsPanelItem>
               <ToolsPanelItem
@@ -363,6 +372,7 @@ export default function Edit({
                   }
                   placeholder={__('Products tagged "%s"', "breadcrumb-block")}
                   autoComplete="off"
+                  __next40pxDefaultSize
                 />
               </ToolsPanelItem>
             </ToolsPanel>
