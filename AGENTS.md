@@ -121,7 +121,7 @@ Active when `class_exists( 'woocommerce' )`. Adds shop/product category/product 
 
 ## Skills
 
-Project workflow skills live in `.github/skills/`: `wp-block-tdd`, `wp-block-audit`, `wp-block-sdd`, `wp-block-feature`. Load the matching skill before doing audits, specs, or features.
+WordPress project: load the global `wp-dev` skill before coding (global skills live in `~/.agents/skills/phi/`). Also global: `wp-block-tdd` (test surface and helpers), `spec-driven` (specs in `context/specs/`), `code-review` (audit workflow).
 
 ## Notes for agents
 
