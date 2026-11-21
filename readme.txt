@@ -1,9 +1,9 @@
 === Breadcrumb Block ===
 Contributors:      Mr2P
 Tags:              breadcrumb, block, Gutenberg, navigation, menu
-Requires PHP:      7.0
-Requires at least: 5.9
-Tested up to:      7.0
+Requires PHP:      8.0
+Requires at least: 7.1
+Tested up to:      7.2
 Stable tag:        1.1.1
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -79,8 +79,8 @@ If this plugin is useful for you, please do a quick review and [rate it](https:/
 
 Please check out my other plugins if you're interested:
 
-- **[Content Blocks Builder](https://wordpress.org/plugins/content-blocks-builder)** - This plugin turns the Block Editor into a powerful page builder by allowing you to create blocks, variations, and patterns directly in the Block Editor without needing a code editor.
-- **[Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block)** - A block to display custom fields as blocks on the front end. It supports custom fields for posts, terms, users, and setting fields. It can also be used in the Query Loop block.
+- **[Content Blocks Builder](https://wordpress.org/plugins/content-blocks-builder)** - Build custom layouts and blocks visually in the Block Editor without needing a code editor, using only core blocks and native Gutenberg features.
+- **[Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block)** - A single block to display custom fields in the Block Editor without coding. It supports ACF, MetaBox, WooCommerce, meta, rest field, shortcode and more. Works everywhere: in the Site Editor (FSE), the Block Editor, inside Query Loop, WooCommerce Product Collection, Term Query blocks, and even in template files.
 - **[SVG Block](https://wordpress.org/plugins/svg-block)** - A block to display SVG images as blocks. Useful for images, icons, dividers, and buttons. It allows you to upload SVG images and load them into the icon library.
 - **[Icon separator](https://wordpress.org/plugins/icon-separator)** - A tiny block just like the core/separator block but with the ability to add an icon.
 - **[Block Enhancements](https://wordpress.org/plugins/block-enhancements)** - Adds practical features to blocks like icons, box shadows, transforms, etc.
