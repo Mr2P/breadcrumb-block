@@ -9,7 +9,7 @@
   ol {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--bb--crumb-gap, .4em);
+    gap: var(--bb--crumb-gap, 0.4em);
     padding: 0;
     margin: 0;
     list-style: none;
@@ -18,9 +18,9 @@
       display: flex;
       align-items: center;
 
-      .sep  {
+      .sep {
         display: flex;
-        margin-left: var(--bb--crumb-gap, .4em);
+        margin-left: var(--bb--crumb-gap, 0.4em);
         line-height: 1;
       }
 
@@ -37,7 +37,7 @@
   }
 
   .breadcrumb-item-name {
-    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   &.hide-home-page {

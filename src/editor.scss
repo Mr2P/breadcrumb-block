@@ -4,7 +4,7 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-@import "./style.scss";
+@use "./style";
 
 .wp-block-boldblocks-breadcrumb-block a {
   pointer-events: none;

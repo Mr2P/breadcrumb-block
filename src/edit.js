@@ -8,6 +8,7 @@ import clsx from "clsx";
  */
 import { __ } from "@wordpress/i18n";
 import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
+/* eslint-disable @wordpress/no-unsafe-wp-apis -- ToolsPanel/ToolsPanelItem are still exported as __experimental in WordPress core (same imports core blocks use); drop this when they graduate. */
 import {
   ToggleControl,
   TextControl,
@@ -17,6 +18,7 @@ import {
   __experimentalToolsPanel as ToolsPanel,
   __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
+/* eslint-enable @wordpress/no-unsafe-wp-apis */
 import { useEffect } from "@wordpress/element";
 
 /**
@@ -25,10 +27,25 @@ import { useEffect } from "@wordpress/element";
 import "./editor.scss";
 
 /**
+ * @typedef {import('@wordpress/element').WPElement} WPElement
+ */
+
+/**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
  *
  * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#edit
+ *
+ * @param {Object}                         root0                            Props.
+ * @param {Object}                         root0.attributes                 Block attributes.
+ * @param {string}                         root0.attributes.gap             Gap between breadcrumb items.
+ * @param {string}                         root0.attributes.separator       Separator between breadcrumb items.
+ * @param {boolean}                        root0.attributes.hideHomePage    Whether to hide the home page item.
+ * @param {boolean}                        root0.attributes.hideCurrentPage Whether to hide the current page item.
+ * @param {string}                         root0.attributes.homeText        Legacy home label, migrated to labels.home.
+ * @param {Object}                         root0.attributes.labels          Custom labels.
+ * @param {( attributes: Object ) => void} root0.setAttributes              Update block attributes.
+ * @param {boolean}                        root0.isSelected                 Whether the block is selected.
  *
  * @return {WPElement} Element to render.
  */
@@ -44,11 +61,16 @@ export default function Edit({
   setAttributes,
   isSelected,
 }) {
-  // Migrate homeText to labels.home
+  // Migrate homeText to labels.home. Runs once on mount: re-running on
+  // labels changes would rewrite attributes on every render.
   useEffect(() => {
     if (homeText && !labels?.home) {
-      setAttributes({ homeText: "", labels: { ...labels, home: homeText } });
+      setAttributes({
+        homeText: "",
+        labels: { ...labels, home: homeText },
+      });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const separatorOptions = [
@@ -153,7 +175,7 @@ export default function Edit({
                 <UnitControl
                   label={gapLabel}
                   value={gap}
-                  onChange={(gap) => setAttributes({ gap })}
+                  onChange={(value) => setAttributes({ gap: value })}
                   __next40pxDefaultSize
                 />
               </ToolsPanelItem>
@@ -170,7 +192,7 @@ export default function Edit({
                 <ToggleGroupControl
                   label={separatorLabel}
                   value={separator}
-                  onChange={(separator) => setAttributes({ separator })}
+                  onChange={(value) => setAttributes({ separator: value })}
                   isBlock
                   className="separator-toggle"
                   __next40pxDefaultSize
@@ -198,7 +220,11 @@ export default function Edit({
                 <ToggleControl
                   label={hideHomePageLabel}
                   checked={hideHomePage}
-                  onChange={(hideHomePage) => setAttributes({ hideHomePage })}
+                  onChange={(value) =>
+                    setAttributes({
+                      hideHomePage: value,
+                    })
+                  }
                 />
               </ToolsPanelItem>
               <ToolsPanelItem
@@ -215,7 +241,9 @@ export default function Edit({
                   label={currentPageLabel}
                   checked={hideCurrentPage}
                   onChange={(value) =>
-                    setAttributes({ hideCurrentPage: value })
+                    setAttributes({
+                      hideCurrentPage: value,
+                    })
                   }
                 />
               </ToolsPanelItem>
@@ -245,7 +273,9 @@ export default function Edit({
                   label={homeLabel}
                   value={labels?.home || ""}
                   onChange={(home) =>
-                    setAttributes({ labels: { ...labels, home } })
+                    setAttributes({
+                      labels: { ...labels, home },
+                    })
                   }
                   placeholder={homeLabel}
                   autoComplete="off"
@@ -265,7 +295,9 @@ export default function Edit({
                   label={error404Label}
                   value={labels?.error404 || ""}
                   onChange={(error404) =>
-                    setAttributes({ labels: { ...labels, error404 } })
+                    setAttributes({
+                      labels: { ...labels, error404 },
+                    })
                   }
                   placeholder={error404Label}
                   autoComplete="off"
@@ -285,12 +317,14 @@ export default function Edit({
                   label={searchResultLabel}
                   value={labels?.searchResult || ""}
                   onChange={(searchResult) =>
-                    setAttributes({ labels: { ...labels, searchResult } })
+                    setAttributes({
+                      labels: { ...labels, searchResult },
+                    })
                   }
-                  placeholder={__(
-                    'Search results for "%s"',
-                    "breadcrumb-block",
-                  )}
+                  placeholder={
+                    // translators: %s: search term.
+                    __('Search results for "%s"', "breadcrumb-block")
+                  }
                   autoComplete="off"
                   __next40pxDefaultSize
                 />
@@ -308,9 +342,14 @@ export default function Edit({
                   label={postsTaggedLabel}
                   value={labels?.postsTagged || ""}
                   onChange={(postsTagged) =>
-                    setAttributes({ labels: { ...labels, postsTagged } })
+                    setAttributes({
+                      labels: { ...labels, postsTagged },
+                    })
                   }
-                  placeholder={__('Posts tagged "%s"', "breadcrumb-block")}
+                  placeholder={
+                    // translators: %s: tag name.
+                    __('Posts tagged "%s"', "breadcrumb-block")
+                  }
                   autoComplete="off"
                   __next40pxDefaultSize
                 />
@@ -328,9 +367,14 @@ export default function Edit({
                   label={authorLabel}
                   value={labels?.author || ""}
                   onChange={(author) =>
-                    setAttributes({ labels: { ...labels, author } })
+                    setAttributes({
+                      labels: { ...labels, author },
+                    })
                   }
-                  placeholder={__('Author: "%s"', "breadcrumb-block")}
+                  placeholder={
+                    // translators: %s: author name.
+                    __('Author: "%s"', "breadcrumb-block")
+                  }
                   autoComplete="off"
                   __next40pxDefaultSize
                 />
@@ -348,9 +392,14 @@ export default function Edit({
                   label={pageLabel}
                   value={labels?.page || ""}
                   onChange={(page) =>
-                    setAttributes({ labels: { ...labels, page } })
+                    setAttributes({
+                      labels: { ...labels, page },
+                    })
                   }
-                  placeholder={__("Page %d", "breadcrumb-block")}
+                  placeholder={
+                    // translators: %d: page number.
+                    __("Page %d", "breadcrumb-block")
+                  }
                   autoComplete="off"
                   __next40pxDefaultSize
                 />
@@ -360,7 +409,10 @@ export default function Edit({
                 hasValue={() => !!labels?.productsTagged}
                 onDeselect={() =>
                   setAttributes({
-                    labels: { ...labels, productsTagged: "" },
+                    labels: {
+                      ...labels,
+                      productsTagged: "",
+                    },
                   })
                 }
               >
@@ -368,9 +420,17 @@ export default function Edit({
                   label={productsTaggedLabel}
                   value={labels?.productsTagged || ""}
                   onChange={(productsTagged) =>
-                    setAttributes({ labels: { ...labels, productsTagged } })
+                    setAttributes({
+                      labels: {
+                        ...labels,
+                        productsTagged,
+                      },
+                    })
                   }
-                  placeholder={__('Products tagged "%s"', "breadcrumb-block")}
+                  placeholder={
+                    // translators: %s: product tag.
+                    __('Products tagged "%s"', "breadcrumb-block")
+                  }
                   autoComplete="off"
                   __next40pxDefaultSize
                 />
@@ -393,25 +453,29 @@ export default function Edit({
         <nav role="navigation" aria-label="breadcrumb" className="breadcrumb">
           <ol className="breadcrumb-items">
             <li className="breadcrumb-item breadcrumb-item--home">
-              <a href="#">
+              <a href="#breadcrumb-home">
                 <span className="breadcrumb-item-name">
                   {labels?.home ? labels.home : __("Home", "breadcrumb-block")}
                 </span>
               </a>
               <span
                 className="sep"
-                dangerouslySetInnerHTML={{ __html: separator }}
+                dangerouslySetInnerHTML={{
+                  __html: separator,
+                }}
               />
             </li>
             <li className="breadcrumb-item breadcrumb-item--parent">
-              <a href="#">
+              <a href="#breadcrumb-parent-page">
                 <span className="breadcrumb-item-name">
                   {__("Parent page", "breadcrumb-block")}
                 </span>
               </a>
               <span
                 className="sep"
-                dangerouslySetInnerHTML={{ __html: separator }}
+                dangerouslySetInnerHTML={{
+                  __html: separator,
+                }}
               />
             </li>
             <li className="breadcrumb-item breadcrumb-item--current">
