@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable no-console -- CLI output is this script's interface. */
+
 "use strict";
 
 /*!
@@ -28,12 +30,16 @@ const GLOBBY_OPTIONS = {
 // https://stackoverflow.com/a/69409483/1038868
 const parseArgv = (key) => {
   // Return true if the key exists and a value is defined
-  if (process.argv.includes(`--${key}`)) return true;
+  if (process.argv.includes(`--${key}`)) {
+    return true;
+  }
 
   const value = process.argv.find((element) => element.startsWith(`--${key}=`));
 
   // Return null if the key does not exist and a value is not defined
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   return value.replace(`--${key}=`, "");
 };

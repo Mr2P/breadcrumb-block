@@ -42,6 +42,11 @@
     <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
   </rule>
 
+  <!-- Test files use PSR-4 file names (required by PHPUnit and autoload-dev). -->
+  <rule ref="WordPress.Files.FileName">
+    <exclude-pattern>tests/*</exclude-pattern>
+  </rule>
+
   <!-- Provide several extra delimiters as one string -->
   <rule ref="WordPress.NamingConventions.ValidHookName">
     <properties>
@@ -55,7 +60,7 @@
   #############################################################################
   -->
 
-  <config name="testVersion" value="7.4-"/>
+  <config name="testVersion" value="8.0-"/>
   <rule ref="PHPCompatibilityWP"/>
 
   <!-- Cyclomatic Complexity -->

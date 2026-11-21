@@ -23,6 +23,13 @@ vendor/
 # Optional eslint cache
 .eslintcache
 
+# PHP_CodeSniffer cache
+.phpcs.cache
+
+# PHPUnit caches and results
+.phpunit.cache/
+.phpunit.result.cache
+
 # Output of `npm pack`
 *.tgz
 
