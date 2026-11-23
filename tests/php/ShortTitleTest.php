@@ -22,7 +22,7 @@ class ShortTitleTest extends TestCase {
 	 */
 	public function test_add_item_uses_post_short_title() {
 		Monkey\Functions\when( 'get_post_meta' )->alias(
-			static function ( $id, $key, $single ) {
+			static function ( $id ) {
 				return 42 === $id ? 'Short Post' : '';
 			}
 		);
@@ -48,7 +48,7 @@ class ShortTitleTest extends TestCase {
 	 */
 	public function test_add_item_uses_term_short_title() {
 		Monkey\Functions\when( 'get_term_meta' )->alias(
-			static function ( $id, $key, $single ) {
+			static function ( $id ) {
 				return 7 === $id ? 'Short Term' : '';
 			}
 		);
@@ -96,7 +96,7 @@ class ShortTitleTest extends TestCase {
 	 */
 	public function test_short_title_filter_overrides_meta() {
 		Monkey\Functions\when( 'get_post_meta' )->alias(
-			static function ( $id, $key, $single ) {
+			static function ( $id ) {
 				return 42 === $id ? 'Short Post' : '';
 			}
 		);
@@ -131,7 +131,7 @@ class ShortTitleTest extends TestCase {
 	 */
 	public function test_short_title_filter_can_disable() {
 		Monkey\Functions\when( 'get_post_meta' )->alias(
-			static function ( $id, $key, $single ) {
+			static function ( $id ) {
 				return 42 === $id ? 'Short Post' : '';
 			}
 		);
@@ -175,13 +175,13 @@ class ShortTitleTest extends TestCase {
 		Monkey\Functions\when( 'get_term_link' )->justReturn( 'http://example.org/category/news/' );
 		Monkey\Functions\when( 'get_ancestors' )->justReturn( [] );
 		Monkey\Functions\when( 'get_post_meta' )->alias(
-			static function ( $id, $key, $single ) {
+			static function ( $id ) {
 				return 42 === $id ? 'Short Post' : '';
 			}
 		);
 		Monkey\Functions\when( 'get_term_meta' )->justReturn( '' );
 
-		$GLOBALS['post'] = new \WP_Post( 42 );
+		$GLOBALS['post'] = new \WP_Post( 42 ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Simulating the WordPress global for the single-post trail.
 
 		$breadcrumbs = Breadcrumbs::get_instance();
 		$breadcrumbs->parse_args( [] );

@@ -19,7 +19,8 @@ namespace BreadcrumbBlock;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-// Load required file.
+// Load required files.
+require_once __DIR__ . '/includes/short-title.php';
 require_once __DIR__ . '/includes/breadcrumbs.php';
 
 /**
@@ -33,6 +34,7 @@ function breadcrumb_block_block_init() {
 	register_block_type( __DIR__ . '/build', [ 'render_callback' => __NAMESPACE__ . '\\breadcrumb_block_render_block' ] );
 }
 add_action( 'init', __NAMESPACE__ . '\\breadcrumb_block_block_init' );
+add_action( 'init', [ Short_Title::class, 'init' ] );
 
 /**
  * Renders the `boldblocks/breadcrumb-block` block on the server.

@@ -79,13 +79,38 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 		 * @param array  $context Context of the item: type and object.
 		 */
 		public function add_item( string $name, string $link = '', array $attrs = [], array $context = [] ): void {
+			// Short title from the item meta, when set.
+			$name = $this->apply_short_title( wp_strip_all_tags( $name ), $context );
+
 			// Allow changing the item.
-			$item = apply_filters( 'breadcrumb_block_get_item', [ wp_strip_all_tags( $name ), $link, $attrs ], $context, $this );
+			$item = apply_filters( 'breadcrumb_block_get_item', [ $name, $link, $attrs ], $context, $this );
 
 			// Add the ability to remove an item from the crumbs.
 			if ( $item ) {
 				$this->items[] = $item;
 			}
+		}
+
+		/**
+		 * Replace the item name with its short title meta, when set.
+		 *
+		 * @param string $name    Item name.
+		 * @param array  $context Context of the item: type and object.
+		 * @return string
+		 */
+		protected function apply_short_title( string $name, array $context ): string {
+			$object = $context['object'] ?? null;
+
+			$short_title = '';
+			if ( $object instanceof \WP_Post ) {
+				$short_title = (string) get_post_meta( $object->ID, Short_Title::META_KEY, true );
+			} elseif ( $object instanceof \WP_Term ) {
+				$short_title = (string) get_term_meta( $object->term_id, Short_Title::META_KEY, true );
+			}
+
+			$short_title = (string) apply_filters( 'breadcrumb_block_get_short_title', $short_title, $object );
+
+			return '' !== $short_title ? $short_title : $name;
 		}
 
 		/**

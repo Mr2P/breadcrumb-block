@@ -2,6 +2,8 @@
 /**
  * Minimal stubs of WordPress data objects for pure unit tests.
  *
+ * phpcs:ignoreFile Generic.Files.OneObjectStructurePerFile.MultipleFound -- Test stubs live together in one file.
+ *
  * @package BreadcrumbBlock\Tests
  */
 
@@ -16,6 +18,13 @@ class WP_Post {
 	 * @var int
 	 */
 	public $ID = 0;
+
+	/**
+	 * Post type.
+	 *
+	 * @var string
+	 */
+	public $post_type = '';
 
 	/**
 	 * Constructor.
