@@ -90,7 +90,7 @@ This is a single-block plugin for the breadcrumb trail. It's simple, lightweight
 
 7. How to show a different taxonomy or term for a single item?
 
-    The block settings include a `Taxonomy for single items` dropdown (Auto by default - `category` for posts, `product_cat` for products). Pick a public hierarchical taxonomy and the trail will lead through its terms for every item of that type.
+    Settings > Breadcrumb Block maps each post type to the taxonomy shown in its single-item trails (Auto by default - `category` for posts, `product_cat` for products). Pick a public taxonomy - flat ones like tags work too; their terms simply show without a parent path.
 
     To pin a specific term per post, use the `Primary term` dropdown in the `Breadcrumb` sidebar panel: it lists the terms assigned to the post from the taxonomy selected in the block settings, and the selected term (with its parent terms) replaces the default one in the trail and the JSON-LD. When nothing is selected, the default applies.
 
