@@ -57,7 +57,7 @@ PHP unit tests run with PHPUnit 9 + Brain Monkey (pure unit, no WordPress boot, 
 1. `init` -> `breadcrumb_block_block_init()` -> `register_block_type( __DIR__ . '/build', [ 'render_callback' => 'BreadcrumbBlock\breadcrumb_block_render_block' ] )`.
 2. `breadcrumb_block_render_block( $attributes, $content, $block )`:
    - Merges `homeText` into `labels.home`.
-   - Calls `Breadcrumbs::get_instance()->get_breadcrumb_trail( [ 'separator', 'taxonomy', 'labels' ] )`.
+   - Calls `Breadcrumbs::get_instance()->get_breadcrumb_trail( [ 'separator', 'labels' ] )`.
    - Sets CSS var `--bb--crumb-gap` from `gap` attribute.
    - Adds classes `hide-home-page` / `hide-current-page` when enabled.
    - Returns `<div {wrapper}>{trail}</div>`.
@@ -70,7 +70,6 @@ PHP unit tests run with PHPUnit 9 + Brain Monkey (pure unit, no WordPress boot, 
 |-----------|------|---------|
 | `gap` | string | `.4em` |
 | `separator` | string | `/` |
-| `taxonomy` | string | `""` (Auto: `category` for posts, `product_cat` for products - the taxonomy shown for single-item trails) |
 | `hideHomePage` | boolean | `false` |
 | `hideCurrentPage` | boolean | `false` |
 | `homeText` | string | `""` (legacy, migrated to `labels.home` in editor) |
