@@ -503,33 +503,85 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 		 * @return \WP_Term|null
 		 */
 		protected function get_single_main_term( \WP_Post $post ): ?\WP_Term {
-			// The per-item primary term, when selected.
-			$primary = $this->primary_term_for( $post );
+			// The taxonomy shown for single items: the block setting, or the type default.
+			$taxonomy = $this->single_taxonomy_for( $post );
+
+			if ( '' === $taxonomy ) {
+				return null;
+			}
+
+			// The per-item primary term, when selected and valid for the taxonomy.
+			$primary = $this->primary_term_for( $post, $taxonomy );
 
 			if ( $primary ) {
 				return $primary;
 			}
 
-			return $this->default_main_term( $post );
+			return $this->default_main_term( $post, $taxonomy );
+		}
+
+		/**
+		 * The taxonomy shown for single items: the block setting, or the type default.
+		 *
+		 * @param \WP_Post $post The single post.
+		 * @return string
+		 */
+		protected function single_taxonomy_for( \WP_Post $post ): string {
+			$configured = $this->args['taxonomy'] ?? '';
+
+			if ( '' !== $configured && taxonomy_exists( $configured ) ) {
+				return $configured;
+			}
+
+			if ( 'product' === get_post_type( $post ) ) {
+				return 'product_cat';
+			}
+
+			if ( 'post' === get_post_type( $post ) ) {
+				return 'category';
+			}
+
+			return '';
 		}
 
 		/**
 		 * Resolve the default main term from the block taxonomy or the type default.
 		 *
-		 * @param \WP_Post $post The single post.
+		 * @param \WP_Post $post     The single post.
+		 * @param string   $taxonomy The taxonomy shown for single items.
 		 * @return \WP_Term|null
 		 */
-		protected function default_main_term( \WP_Post $post ): ?\WP_Term {
-			$configured = $this->args['taxonomy'] ?? '';
-
-			if ( '' !== $configured ) {
-				$main_term = $this->main_term_from_terms( get_the_terms( $post, $configured ), $configured );
-
-				if ( $main_term ) {
-					return $main_term;
-				}
+		protected function default_main_term( \WP_Post $post, string $taxonomy ): ?\WP_Term {
+			// The type default sources preserve the legacy ordering.
+			if ( 'product' === get_post_type( $post ) && 'product_cat' === $taxonomy ) {
+				return $this->main_term_from_terms(
+					wc_get_product_terms(
+						$post->ID,
+						'product_cat',
+						apply_filters(
+							'breadcrumb_block_product_terms_args',
+							[
+								'orderby' => 'parent',
+								'order'   => 'DESC',
+							]
+						)
+					),
+					'product_cat'
+				);
 			}
 
+			if ( 'post' === get_post_type( $post ) && 'category' === $taxonomy ) {
+				return $this->main_term_from_terms( get_the_category( $post ), 'category' );
+			}
+
+			// An explicitly configured taxonomy: the assigned terms of that taxonomy.
+			$main_term = $this->main_term_from_terms( get_the_terms( $post, $taxonomy ), $taxonomy );
+
+			if ( $main_term ) {
+				return $main_term;
+			}
+
+			// The configured taxonomy has no assigned terms: fall back to the type default.
 			if ( 'product' === get_post_type( $post ) ) {
 				return $this->main_term_from_terms(
 					wc_get_product_terms(
@@ -572,10 +624,11 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 		/**
 		 * Resolve the item's primary term meta, when set and assigned.
 		 *
-		 * @param \WP_Post $post The single post.
+		 * @param \WP_Post $post     The single post.
+		 * @param string   $taxonomy The taxonomy shown for single items.
 		 * @return \WP_Term|null
 		 */
-		protected function primary_term_for( \WP_Post $post ): ?\WP_Term {
+		protected function primary_term_for( \WP_Post $post, string $taxonomy ): ?\WP_Term {
 			$primary_id = (int) get_post_meta( $post->ID, Primary_Term::META_KEY, true );
 
 			if ( ! $primary_id ) {
@@ -584,7 +637,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 
 			$term = get_term( $primary_id );
 
-			if ( ! $term instanceof \WP_Term || is_wp_error( $term ) || ! has_term( $primary_id, $term->taxonomy, $post ) ) {
+			if ( ! $term instanceof \WP_Term || is_wp_error( $term ) || $term->taxonomy !== $taxonomy || ! has_term( $primary_id, $taxonomy, $post ) ) {
 				return null;
 			}
 

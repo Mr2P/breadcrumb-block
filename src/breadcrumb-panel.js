@@ -13,9 +13,31 @@ import { __ } from "@wordpress/i18n";
  */
 
 /**
+ * Find the first breadcrumb block, including nested blocks.
+ *
+ * @param {Array} blocks Block list.
+ * @return {Object|null} The breadcrumb block, or null.
+ */
+const findBreadcrumbBlock = (blocks) => {
+  for (const block of blocks) {
+    if (block.name === "boldblocks/breadcrumb-block") {
+      return block;
+    }
+
+    const found = findBreadcrumbBlock(block.innerBlocks ?? []);
+    if (found) {
+      return found;
+    }
+  }
+
+  return null;
+};
+
+/**
  * The breadcrumb panel for the post editor sidebar: short title and primary term.
  *
- * Renders only where the breadcrumb meta is registered (public post types).
+ * The primary term dropdown follows the taxonomy configured in the breadcrumb
+ * block (or the type default), and lists the terms assigned to the post.
  *
  * @return {WPElement} The panel element.
  */
@@ -30,25 +52,49 @@ const BreadcrumbPanel = () => {
   );
   const [meta, setMeta] = useEntityProp("postType", postType, "meta");
 
-  const taxonomies = useSelect(
-    (select) =>
-      (select("core").getTaxonomies({ per_page: -1 }) ?? []).filter(
-        (taxonomy) => taxonomy.hierarchical
-      ),
-    []
+  // Taxonomies related to the current post type (hierarchical ones only).
+  const postTypeTaxonomies = useSelect(
+    (select) => {
+      const type = select("core").getPostType(postType);
+      const slugs = type?.taxonomies ?? [];
+
+      return (select("core").getTaxonomies({ per_page: -1 }) ?? []).filter(
+        (taxonomy) => taxonomy.hierarchical && slugs.includes(taxonomy.slug)
+      );
+    },
+    [postType]
   );
 
+  // The selected taxonomy: the breadcrumb block's setting, or the first
+  // hierarchical taxonomy of the post type.
+  const selectedTaxonomy = useSelect(
+    (select) => {
+      const configured =
+        findBreadcrumbBlock(select("core/block-editor").getBlocks() ?? [])
+          ?.attributes?.taxonomy ?? "";
+
+      if (configured) {
+        return configured;
+      }
+
+      return (
+        postTypeTaxonomies.find((taxonomy) => taxonomy.hierarchical)?.slug ?? ""
+      );
+    },
+    [postTypeTaxonomies]
+  );
+
+  // The terms of the selected taxonomy assigned to the post.
   const terms = useSelect(
     (select) =>
-      (taxonomies ?? []).flatMap(
-        (taxonomy) =>
-          select("core").getEntityRecords("taxonomy", taxonomy.slug, {
+      selectedTaxonomy
+        ? (select("core").getEntityRecords("taxonomy", selectedTaxonomy, {
             post: postId,
             per_page: -1,
             hide_empty: false,
-          }) ?? []
-      ),
-    [taxonomies, postId]
+          }) ?? [])
+        : [],
+    [selectedTaxonomy, postId]
   );
 
   // The meta keys are registered only for public post types.
@@ -56,16 +102,9 @@ const BreadcrumbPanel = () => {
     return null;
   }
 
-  const taxonomyNames = Object.fromEntries(
-    (taxonomies ?? []).map((taxonomy) => [taxonomy.slug, taxonomy.name])
-  );
-
   const termOptions = [
     { label: __("Default", "breadcrumb-block"), value: "0" },
-    ...terms.map((term) => ({
-      label: `${term.name} (${taxonomyNames[term.taxonomy] ?? term.taxonomy})`,
-      value: String(term.id),
-    })),
+    ...terms.map((term) => ({ label: term.name, value: String(term.id) })),
   ];
 
   return (
@@ -83,19 +122,21 @@ const BreadcrumbPanel = () => {
         onChange={(nextValue) => setMeta({ breadcrumb_short_title: nextValue })}
         __next40pxDefaultSize
       />
-      <SelectControl
-        label={__("Primary term", "breadcrumb-block")}
-        help={__(
-          "Optional. The term whose path leads to this post in the breadcrumb trail.",
-          "breadcrumb-block"
-        )}
-        value={String(meta.breadcrumb_primary_term ?? 0)}
-        options={termOptions}
-        onChange={(nextValue) =>
-          setMeta({ breadcrumb_primary_term: Number(nextValue) })
-        }
-        __next40pxDefaultSize
-      />
+      {selectedTaxonomy && (
+        <SelectControl
+          label={__("Primary term", "breadcrumb-block")}
+          help={__(
+            "Optional. The term whose path leads to this post in the breadcrumb trail.",
+            "breadcrumb-block"
+          )}
+          value={String(meta.breadcrumb_primary_term ?? 0)}
+          options={termOptions}
+          onChange={(nextValue) =>
+            setMeta({ breadcrumb_primary_term: Number(nextValue) })
+          }
+          __next40pxDefaultSize
+        />
+      )}
     </PluginDocumentSettingPanel>
   );
 };
