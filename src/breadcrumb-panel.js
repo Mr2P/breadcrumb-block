@@ -36,8 +36,9 @@ const findBreadcrumbBlock = (blocks) => {
 /**
  * The breadcrumb panel for the post editor sidebar: short title and primary term.
  *
- * The primary term dropdown follows the taxonomy configured in the breadcrumb
- * block (or the type default), and lists the terms assigned to the post.
+ * The primary term dropdown follows the taxonomy that the render will use:
+ * the breadcrumb block's setting in the post content, else in the post's
+ * template, else the type default - and lists the terms assigned to the post.
  *
  * @return {WPElement} The panel element.
  */
@@ -50,39 +51,71 @@ const BreadcrumbPanel = () => {
     (select) => select("core/editor").getEditedPostAttribute("type"),
     []
   );
+  const templateSlug = useSelect(
+    (select) => select("core/editor").getEditedPostAttribute("template"),
+    []
+  );
   const [meta, setMeta] = useEntityProp("postType", postType, "meta");
 
-  // Taxonomies related to the current post type (hierarchical ones only).
-  const postTypeTaxonomies = useSelect(
-    (select) => {
-      const type = select("core").getPostType(postType);
-      const slugs = type?.taxonomies ?? [];
-
-      return (select("core").getTaxonomies({ per_page: -1 }) ?? []).filter(
-        (taxonomy) => taxonomy.hierarchical && slugs.includes(taxonomy.slug)
-      );
-    },
-    [postType]
+  // Tier 1: the breadcrumb block's taxonomy setting in the post content.
+  const contentTaxonomy = useSelect(
+    (select) =>
+      findBreadcrumbBlock(select("core/block-editor").getBlocks() ?? [])
+        ?.attributes?.taxonomy ?? "",
+    []
   );
 
-  // The selected taxonomy: the breadcrumb block's setting, or the first
-  // hierarchical taxonomy of the post type.
-  const selectedTaxonomy = useSelect(
+  // Tier 2: the breadcrumb block's taxonomy setting in the post's template.
+  const templateTaxonomy = useSelect(
     (select) => {
-      const configured =
-        findBreadcrumbBlock(select("core/block-editor").getBlocks() ?? [])
-          ?.attributes?.taxonomy ?? "";
+      let candidates = [`single-${postType}`, "single", "singular"];
 
-      if (configured) {
-        return configured;
+      if (postType === "page") {
+        candidates = ["page", "singular", "single"];
       }
 
-      return (
-        postTypeTaxonomies.find((taxonomy) => taxonomy.hierarchical)?.slug ?? ""
-      );
+      if (templateSlug) {
+        candidates = [templateSlug];
+      }
+
+      const templates =
+        select("core").getEntityRecords("postType", "wp_template", {
+          per_page: -1,
+        }) ?? [];
+
+      for (const slug of candidates) {
+        const template = templates.find((item) => item.slug === slug);
+
+        if (template) {
+          const record = select("core").getEditedEntityRecord(
+            "postType",
+            "wp_template",
+            template.id
+          );
+          const found = findBreadcrumbBlock(record?.blocks ?? []);
+
+          if (found) {
+            return found.attributes?.taxonomy ?? "";
+          }
+        }
+      }
+
+      return "";
     },
-    [postTypeTaxonomies]
+    [templateSlug, postType]
   );
+
+  // Tier 3: the type default (matches the server-side single_taxonomy_for()).
+  let defaultTaxonomy = "";
+
+  if (postType === "product") {
+    defaultTaxonomy = "product_cat";
+  } else if (postType === "post") {
+    defaultTaxonomy = "category";
+  }
+
+  const selectedTaxonomy =
+    contentTaxonomy || templateTaxonomy || defaultTaxonomy;
 
   // The terms of the selected taxonomy assigned to the post.
   const terms = useSelect(

@@ -23,7 +23,12 @@ class SettingsTest extends TestCase {
 		$category     = new \WP_Taxonomy( 'category', true, [ 'post' ] );
 		$doc_sections = new \WP_Taxonomy( 'doc-section', true, [ 'docs' ] );
 
-		Monkey\Functions\when( 'get_post_types' )->justReturn( [ 'post' => 'post', 'docs' => 'docs' ] );
+		Monkey\Functions\when( 'get_post_types' )->justReturn(
+			[
+				'post' => new \WP_Post_Type( 'post', 'Posts' ),
+				'docs' => new \WP_Post_Type( 'docs', 'Docs' ),
+			]
+		);
 		Monkey\Functions\when( 'get_object_taxonomies' )->alias(
 			static fn ( $post_type ) => 'docs' === $post_type ? [ $doc_sections ] : [ $category ]
 		);
@@ -32,6 +37,8 @@ class SettingsTest extends TestCase {
 				return 'doc-section' === $slug ? $doc_sections : $category;
 			}
 		);
+		Monkey\Functions\when( 'sanitize_key' )->returnArg();
+		Monkey\Functions\when( 'wp_unslash' )->returnArg();
 
 		$clean = \BreadcrumbBlock\Settings::sanitize_taxonomies(
 			[
@@ -42,7 +49,13 @@ class SettingsTest extends TestCase {
 			]
 		);
 
-		$this->assertSame( [ 'post' => 'category', 'docs' => 'doc-section' ], $clean );
+		$this->assertSame(
+			[
+				'post' => 'category',
+				'docs' => 'doc-section',
+			],
+			$clean
+		);
 	}
 
 	/**
@@ -54,7 +67,12 @@ class SettingsTest extends TestCase {
 		$post_tag = new \WP_Taxonomy( 'post_tag', false, [ 'post' ] );
 		$category = new \WP_Taxonomy( 'category', true, [ 'post' ] );
 
-		Monkey\Functions\when( 'get_post_types' )->justReturn( [ 'post' => 'post', 'docs' => 'docs' ] );
+		Monkey\Functions\when( 'get_post_types' )->justReturn(
+			[
+				'post' => new \WP_Post_Type( 'post', 'Posts' ),
+				'docs' => new \WP_Post_Type( 'docs', 'Docs' ),
+			]
+		);
 		Monkey\Functions\when( 'get_object_taxonomies' )->alias(
 			static fn ( $post_type ) => 'docs' === $post_type ? [] : [ $category, $post_tag ]
 		);
@@ -63,6 +81,8 @@ class SettingsTest extends TestCase {
 				return 'category' === $slug ? $category : $post_tag;
 			}
 		);
+		Monkey\Functions\when( 'sanitize_key' )->returnArg();
+		Monkey\Functions\when( 'wp_unslash' )->returnArg();
 
 		$clean = \BreadcrumbBlock\Settings::sanitize_taxonomies(
 			[

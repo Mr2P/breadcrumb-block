@@ -15,10 +15,6 @@
       "type": "string",
       "default": "/"
     },
-    "taxonomy": {
-      "type": "string",
-      "default": ""
-    },
     "hideHomePage": {
       "type": "boolean",
       "default": false

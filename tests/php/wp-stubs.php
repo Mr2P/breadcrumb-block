@@ -24,15 +24,51 @@ class WP_Post {
 	 *
 	 * @var string
 	 */
-	public $post_type = '';
+	public $post_type = 'post';
 
 	/**
 	 * Constructor.
 	 *
-	 * @param int $id Post ID.
+	 * @param int    $id        Post ID.
+	 * @param string $post_type Post type.
 	 */
-	public function __construct( $id = 0 ) {
-		$this->ID = (int) $id;
+	public function __construct( $id = 0, $post_type = 'post' ) {
+		$this->ID        = (int) $id;
+		$this->post_type = (string) $post_type;
+	}
+}
+
+/**
+ * Minimal WP_Post_Type stub.
+ */
+class WP_Post_Type {
+
+	/**
+	 * Post type slug.
+	 *
+	 * @var string
+	 */
+	public $name = '';
+
+	/**
+	 * Labels.
+	 *
+	 * @var object
+	 */
+	public $labels;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string $name     Post type slug.
+	 * @param string $singular Singular label.
+	 */
+	public function __construct( $name = '', $singular = '' ) {
+		$this->name   = (string) $name;
+		$this->labels = (object) [
+			'name'          => (string) $name,
+			'singular_name' => (string) ( $singular ?: $name ),
+		];
 	}
 }
 

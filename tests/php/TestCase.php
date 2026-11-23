@@ -147,9 +147,10 @@ abstract class TestCase extends PHPUnitTestCase {
 	/**
 	 * Stub a single-post context: terms by id, post meta, and the editor globals.
 	 *
-	 * @param array  $terms_by_id Assigned WP_Term stubs keyed by term id.
-	 * @param array  $meta        Post meta values keyed by meta key.
-	 * @param string $post_type   The post type of the single post.
+	 * @param array  $terms_by_id      Assigned WP_Term stubs keyed by term id.
+	 * @param array  $meta             Post meta values keyed by meta key.
+	 * @param string $post_type        The post type of the single post.
+	 * @param array  $taxonomy_mapping Per-post-type taxonomy mapping (post type => taxonomy slug).
 	 * @return void
 	 */
 	protected function stub_single_post(
@@ -169,7 +170,7 @@ abstract class TestCase extends PHPUnitTestCase {
 		);
 
 		Monkey\Functions\when( 'get_post' )->alias(
-			static fn () => new \WP_Post( 42 )
+			static fn () => new \WP_Post( 42, $post_type )
 		);
 		Monkey\Functions\when( 'home_url' )->justReturn( 'http://example.org/' );
 		Monkey\Functions\when( 'get_post_type' )->justReturn( $post_type );
@@ -189,11 +190,12 @@ abstract class TestCase extends PHPUnitTestCase {
 	/**
 	 * Build the single-post trail.
 	 *
-	 * @param array $args Trail arguments.
+	 * @param array  $args      Trail arguments.
+	 * @param string $post_type The post type of the single post.
 	 * @return string
 	 */
-	protected function single_trail( array $args = [] ): string {
-		$GLOBALS['post'] = new \WP_Post( 42 ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Simulating the WordPress global for the single-post trail.
+	protected function single_trail( array $args = [], string $post_type = 'post' ): string {
+		$GLOBALS['post'] = new \WP_Post( 42, $post_type ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Simulating the WordPress global for the single-post trail.
 
 		$breadcrumbs = Breadcrumbs::get_instance();
 

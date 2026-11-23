@@ -206,7 +206,6 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 					'item_before' => '',
 					'item_after'  => '',
 					'separator'   => '',
-					'taxonomy'    => '',
 					'aria_label'  => esc_attr_x( 'Breadcrumbs', 'breadcrumb aria label', 'breadcrumb-block' ),
 					'labels'      => [],
 					'echo'        => false,
@@ -521,13 +520,15 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 		}
 
 		/**
-		 * The taxonomy shown for single items: the block setting, or the type default.
+		 * The taxonomy shown for single items: the per-post-type mapping from the
+		 * settings, or the type default.
 		 *
 		 * @param \WP_Post $post The single post.
 		 * @return string
 		 */
 		protected function single_taxonomy_for( \WP_Post $post ): string {
-			$configured = $this->args['taxonomy'] ?? '';
+			$mappings   = (array) get_option( Settings::OPTION_KEY, [] );
+			$configured = $mappings[ $post->post_type ] ?? '';
 
 			if ( '' !== $configured && taxonomy_exists( $configured ) ) {
 				return $configured;

@@ -48,9 +48,9 @@ class PrimaryTermTest extends TestCase {
 		$tech   = new \WP_Term( 8, 'Tech', 'category' );
 		$this->stub_single_post(
 			[
-				5  => $guides,
-				7  => $news,
-				8  => $tech,
+				5 => $guides,
+				7 => $news,
+				8 => $tech,
 			],
 			[ 'breadcrumb_primary_term' => 8 ]
 		);
@@ -91,10 +91,16 @@ class PrimaryTermTest extends TestCase {
 		$news   = new \WP_Term( 7, 'News', 'category' );
 		$region = new \WP_Term( 9, 'Europe', 'region' );
 		$this->stub_single_post(
-			[ 7 => $news, 9 => $region ],
+			[
+				7 => $news,
+				9 => $region,
+			],
 			[],
 			'post',
 			[ 'post' => 'region' ]
+		);
+		Monkey\Functions\when( 'get_the_terms' )->alias(
+			static fn ( $post, $taxonomy ) => 'region' === $taxonomy ? [ $region ] : []
 		);
 
 		$trail = $this->single_trail();
@@ -140,6 +146,9 @@ class PrimaryTermTest extends TestCase {
 			'post',
 			[ 'post' => 'region' ]
 		);
+		Monkey\Functions\when( 'get_the_terms' )->alias(
+			static fn ( $post, $taxonomy ) => 'region' === $taxonomy ? [ $europe, $asia ] : []
+		);
 
 		$trail = $this->single_trail();
 
@@ -156,10 +165,16 @@ class PrimaryTermTest extends TestCase {
 		$news   = new \WP_Term( 7, 'News', 'category' );
 		$region = new \WP_Term( 9, 'Europe', 'region' );
 		$this->stub_single_post(
-			[ 7 => $news, 9 => $region ],
+			[
+				7 => $news,
+				9 => $region,
+			],
 			[ 'breadcrumb_primary_term' => 7 ],
 			'post',
 			[ 'post' => 'region' ]
+		);
+		Monkey\Functions\when( 'get_the_terms' )->alias(
+			static fn ( $post, $taxonomy ) => 'region' === $taxonomy ? [ $region ] : []
 		);
 
 		$trail = $this->single_trail();
@@ -176,14 +191,21 @@ class PrimaryTermTest extends TestCase {
 	public function test_product_auto_uses_product_category() {
 		$ship = new \WP_Term( 11, 'Ships', 'product_cat' );
 		$fast = new \WP_Term( 12, 'Fast Shipping', 'product_cat' );
-		$this->stub_single_post( [ 11 => $ship, 12 => $fast ], [], 'product' );
+		$this->stub_single_post(
+			[
+				11 => $ship,
+				12 => $fast,
+			],
+			[],
+			'product'
+		);
 		Monkey\Functions\when( 'wc_get_product_terms' )->alias(
 			static fn () => [ $ship, $fast ]
 		);
 		Monkey\Functions\when( 'wc_get_permalink_structure' )->justReturn( [] );
 		Monkey\Functions\when( 'wc_get_page_id' )->justReturn( 0 );
 
-		$trail = $this->single_trail();
+		$trail = $this->single_trail( [], 'product' );
 
 		$this->assertStringContainsString( '<span class="breadcrumb-item-name">Ships</span>', $trail );
 	}
@@ -197,7 +219,10 @@ class PrimaryTermTest extends TestCase {
 		$ship = new \WP_Term( 11, 'Ships', 'product_cat' );
 		$fast = new \WP_Term( 12, 'Fast Shipping', 'product_cat' );
 		$this->stub_single_post(
-			[ 11 => $ship, 12 => $fast ],
+			[
+				11 => $ship,
+				12 => $fast,
+			],
 			[ 'breadcrumb_primary_term' => 12 ],
 			'product'
 		);
@@ -207,7 +232,7 @@ class PrimaryTermTest extends TestCase {
 		Monkey\Functions\when( 'wc_get_permalink_structure' )->justReturn( [] );
 		Monkey\Functions\when( 'wc_get_page_id' )->justReturn( 0 );
 
-		$trail = $this->single_trail();
+		$trail = $this->single_trail( [], 'product' );
 
 		$this->assertStringContainsString( '<span class="breadcrumb-item-name">Fast Shipping</span>', $trail );
 		$this->assertStringNotContainsString( 'Ships', $trail );
@@ -222,7 +247,10 @@ class PrimaryTermTest extends TestCase {
 		$news = new \WP_Term( 7, 'News', 'category' );
 		$tech = new \WP_Term( 8, 'Tech', 'category' );
 		$this->stub_single_post(
-			[ 7 => $news, 8 => $tech ],
+			[
+				7 => $news,
+				8 => $tech,
+			],
 			[ 'breadcrumb_primary_term' => 8 ]
 		);
 		$this->override_apply_filters(
@@ -238,5 +266,18 @@ class PrimaryTermTest extends TestCase {
 		$trail = $this->single_trail();
 
 		$this->assertStringContainsString( '<span class="breadcrumb-item-name">News</span>', $trail );
+	}
+
+	/**
+	 * Temporary minimal probe for get_the_terms stubbing.
+	 *
+	 * @return void
+	 */
+	public function test_zz_minimal_probe() {
+		Monkey\Functions\when( 'get_the_terms' )->alias(
+			static fn ( $post, $tax ) => [ 'stubbed' ]
+		);
+
+		$this->assertSame( [ 'stubbed' ], get_the_terms( null, 'region' ) );
 	}
 }

@@ -180,6 +180,7 @@ class ShortTitleTest extends TestCase {
 			}
 		);
 		Monkey\Functions\when( 'get_term_meta' )->justReturn( '' );
+		Monkey\Functions\when( 'get_option' )->justReturn( [] );
 
 		$GLOBALS['post'] = new \WP_Post( 42 ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Simulating the WordPress global for the single-post trail.
 
