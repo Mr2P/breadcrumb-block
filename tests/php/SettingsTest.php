@@ -15,12 +15,13 @@ use Brain\Monkey;
 class SettingsTest extends TestCase {
 
 	/**
-	 * Valid hierarchical mappings are kept.
+	 * Valid mappings are kept - flat taxonomies like post_tag included.
 	 *
 	 * @return void
 	 */
 	public function test_sanitize_keeps_valid_mappings() {
 		$category     = new \WP_Taxonomy( 'category', true, [ 'post' ] );
+		$post_tag     = new \WP_Taxonomy( 'post_tag', false, [ 'post' ] );
 		$doc_sections = new \WP_Taxonomy( 'doc-section', true, [ 'docs' ] );
 
 		Monkey\Functions\when( 'get_post_types' )->justReturn(
@@ -30,7 +31,54 @@ class SettingsTest extends TestCase {
 			]
 		);
 		Monkey\Functions\when( 'get_object_taxonomies' )->alias(
-			static fn ( $post_type ) => 'docs' === $post_type ? [ $doc_sections ] : [ $category ]
+			static fn ( $post_type ) => 'docs' === $post_type ? [ $doc_sections ] : [ $category, $post_tag ]
+		);
+		Monkey\Functions\when( 'get_taxonomy' )->alias(
+			static function ( $slug ) use ( $category, $doc_sections, $post_tag ) {
+				if ( 'doc-section' === $slug ) {
+					return $doc_sections;
+				}
+
+				if ( 'post_tag' === $slug ) {
+					return $post_tag;
+				}
+
+				return $category;
+			}
+		);
+		Monkey\Functions\when( 'sanitize_key' )->returnArg();
+		Monkey\Functions\when( 'wp_unslash' )->returnArg();
+
+		$clean = \BreadcrumbBlock\Settings::sanitize_taxonomies(
+			[
+				'taxonomies' => [
+					'post' => 'post_tag',
+					'docs' => 'doc-section',
+				],
+			]
+		);
+
+		$this->assertSame( [ 'post' => 'post_tag', 'docs' => 'doc-section' ], $clean );
+	}
+
+	/**
+	 * Unattached, unknown, or non-public taxonomies are dropped.
+	 *
+	 * @return void
+	 */
+	public function test_sanitize_drops_invalid_mappings() {
+		$category     = new \WP_Taxonomy( 'category', true, [ 'post' ] );
+		$doc_sections = new \WP_Taxonomy( 'doc-section', true, [ 'docs' ] );
+		$doc_sections->public = false;
+
+		Monkey\Functions\when( 'get_post_types' )->justReturn(
+			[
+				'post' => new \WP_Post_Type( 'post', 'Posts' ),
+				'docs' => new \WP_Post_Type( 'docs', 'Docs' ),
+			]
+		);
+		Monkey\Functions\when( 'get_object_taxonomies' )->alias(
+			static fn ( $post_type ) => 'docs' === $post_type ? [ $doc_sections ] : []
 		);
 		Monkey\Functions\when( 'get_taxonomy' )->alias(
 			static function ( $slug ) use ( $category, $doc_sections ) {
@@ -43,55 +91,38 @@ class SettingsTest extends TestCase {
 		$clean = \BreadcrumbBlock\Settings::sanitize_taxonomies(
 			[
 				'taxonomies' => [
-					'post' => 'category',
-					'docs' => 'doc-section',
+					'docs'       => 'doc-section',
+					'uknowntype' => 'category',
 				],
 			]
 		);
 
-		$this->assertSame(
-			[
-				'post' => 'category',
-				'docs' => 'doc-section',
-			],
-			$clean
-		);
+		$this->assertSame( [ 'docs' => 'doc-section' ], $clean );
 	}
 
 	/**
-	 * Non-hierarchical, unattached, or unknown taxonomies are dropped.
+	 * A non-public taxonomy mapping is dropped.
 	 *
 	 * @return void
 	 */
-	public function test_sanitize_drops_invalid_mappings() {
-		$post_tag = new \WP_Taxonomy( 'post_tag', false, [ 'post' ] );
+	public function test_sanitize_drops_non_public_taxonomy() {
 		$category = new \WP_Taxonomy( 'category', true, [ 'post' ] );
+		$category->public = false;
 
 		Monkey\Functions\when( 'get_post_types' )->justReturn(
-			[
-				'post' => new \WP_Post_Type( 'post', 'Posts' ),
-				'docs' => new \WP_Post_Type( 'docs', 'Docs' ),
-			]
+			[ 'post' => new \WP_Post_Type( 'post', 'Posts' ) ]
 		);
 		Monkey\Functions\when( 'get_object_taxonomies' )->alias(
-			static fn ( $post_type ) => 'docs' === $post_type ? [] : [ $category, $post_tag ]
+			static fn ( $post_type ) => [ $category ]
 		);
 		Monkey\Functions\when( 'get_taxonomy' )->alias(
-			static function ( $slug ) use ( $category, $post_tag ) {
-				return 'category' === $slug ? $category : $post_tag;
-			}
+			static fn () => $category
 		);
 		Monkey\Functions\when( 'sanitize_key' )->returnArg();
 		Monkey\Functions\when( 'wp_unslash' )->returnArg();
 
 		$clean = \BreadcrumbBlock\Settings::sanitize_taxonomies(
-			[
-				'taxonomies' => [
-					'post'       => 'post_tag',
-					'docs'       => 'doc-section',
-					'uknowntype' => 'category',
-				],
-			]
+			[ 'taxonomies' => [ 'post' => 'category' ] ]
 		);
 
 		$this->assertSame( [], $clean );
