@@ -156,8 +156,8 @@ class PrimaryTermTest extends TestCase {
 		$region = new \WP_Term( 9, 'Europe', 'region' );
 		$this->stub_single_post(
 			[
-				7  => $news,
-				9  => $region,
+				7 => $news,
+				9 => $region,
 			],
 			[ 'breadcrumb_primary_term' => 7 ]
 		);
