@@ -152,10 +152,21 @@ abstract class TestCase extends PHPUnitTestCase {
 	 * @param string $post_type   The post type of the single post.
 	 * @return void
 	 */
-	protected function stub_single_post( array $terms_by_id, array $meta = [], string $post_type = 'post' ): void {
+	protected function stub_single_post(
+		array $terms_by_id,
+		array $meta = [],
+		string $post_type = 'post',
+		array $taxonomy_mapping = []
+	): void {
 		$this->stub_terms( $terms_by_id );
 		$this->stub_post_meta( $meta );
 		$this->stub_query_conditionals( [ 'is_single' ] );
+
+		Monkey\Functions\when( 'get_option' )->alias(
+			static function ( $name ) use ( $taxonomy_mapping ) {
+				return 'breadcrumb_block_taxonomies' === $name ? $taxonomy_mapping : '';
+			}
+		);
 
 		Monkey\Functions\when( 'get_post' )->alias(
 			static fn () => new \WP_Post( 42 )

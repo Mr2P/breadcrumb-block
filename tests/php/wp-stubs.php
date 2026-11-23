@@ -82,3 +82,51 @@ class WP_Term {
 		$this->taxonomy = (string) $taxonomy;
 	}
 }
+
+/**
+ * Minimal WP_Taxonomy stub.
+ */
+class WP_Taxonomy {
+
+	/**
+	 * Taxonomy slug.
+	 *
+	 * @var string
+	 */
+	public $name = '';
+
+	/**
+	 * Whether the taxonomy is hierarchical.
+	 *
+	 * @var bool
+	 */
+	public $hierarchical = false;
+
+	/**
+	 * Whether the taxonomy is public.
+	 *
+	 * @var bool
+	 */
+	public $public = true;
+
+	/**
+	 * Post types the taxonomy is attached to.
+	 *
+	 * @var array
+	 */
+	public $object_type = [];
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string $name        Taxonomy slug.
+	 * @param bool   $hierarchical Whether the taxonomy is hierarchical.
+	 * @param array  $object_type Post types the taxonomy is attached to.
+	 */
+	public function __construct( $name = '', $hierarchical = true, $object_type = [] ) {
+		$this->name         = (string) $name;
+		$this->hierarchical = (bool) $hierarchical;
+		$this->object_type  = (array) $object_type;
+		$this->public       = true;
+	}
+}

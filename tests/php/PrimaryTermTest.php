@@ -11,7 +11,7 @@ use BreadcrumbBlock\Breadcrumbs;
 use Brain\Monkey;
 
 /**
- * Two-level primary term selection: block taxonomy setting + per-item primary term.
+ * Two-level primary term selection: per-post-type taxonomy mapping + per-item primary term.
  */
 class PrimaryTermTest extends TestCase {
 
@@ -48,14 +48,14 @@ class PrimaryTermTest extends TestCase {
 		$tech   = new \WP_Term( 8, 'Tech', 'category' );
 		$this->stub_single_post(
 			[
-				5 => $guides,
-				7 => $news,
-				8 => $tech,
+				5  => $guides,
+				7  => $news,
+				8  => $tech,
 			],
 			[ 'breadcrumb_primary_term' => 8 ]
 		);
 		Monkey\Functions\when( 'get_ancestors' )->alias(
-			static fn ( $id ) => 8 === (int) $id ? [ 5 ] : []
+			static fn ( $id, $taxonomy ) => 8 === (int) $id ? [ 5 ] : []
 		);
 
 		$trail = $this->single_trail();
@@ -83,50 +83,52 @@ class PrimaryTermTest extends TestCase {
 	}
 
 	/**
-	 * The block taxonomy setting uses that taxonomy for the trail.
+	 * The per-post-type taxonomy mapping uses that taxonomy for the trail.
 	 *
 	 * @return void
 	 */
-	public function test_block_taxonomy_setting_uses_that_taxonomy() {
+	public function test_mapped_taxonomy_uses_that_taxonomy() {
 		$news   = new \WP_Term( 7, 'News', 'category' );
 		$region = new \WP_Term( 9, 'Europe', 'region' );
 		$this->stub_single_post(
-			[
-				7 => $news,
-				9 => $region,
-			]
-		);
-		Monkey\Functions\when( 'get_the_terms' )->alias(
-			static fn ( $post, $taxonomy ) => 'region' === $taxonomy ? [ $region ] : []
+			[ 7 => $news, 9 => $region ],
+			[],
+			'post',
+			[ 'post' => 'region' ]
 		);
 
-		$trail = $this->single_trail( [ 'taxonomy' => 'region' ] );
+		$trail = $this->single_trail();
 
 		$this->assertStringContainsString( '<span class="breadcrumb-item-name">Europe</span>', $trail );
 		$this->assertStringNotContainsString( 'News', $trail );
 	}
 
 	/**
-	 * A configured taxonomy without assigned terms falls back to the default.
+	 * A mapped taxonomy without assigned terms falls back to the default.
 	 *
 	 * @return void
 	 */
-	public function test_configured_taxonomy_without_terms_falls_back() {
+	public function test_mapped_taxonomy_without_terms_falls_back() {
 		$news = new \WP_Term( 7, 'News', 'category' );
-		$this->stub_single_post( [ 7 => $news ] );
+		$this->stub_single_post(
+			[ 7 => $news ],
+			[],
+			'post',
+			[ 'post' => 'region' ]
+		);
 		Monkey\Functions\when( 'get_the_terms' )->justReturn( [] );
 
-		$trail = $this->single_trail( [ 'taxonomy' => 'region' ] );
+		$trail = $this->single_trail();
 
 		$this->assertStringContainsString( '<span class="breadcrumb-item-name">News</span>', $trail );
 	}
 
 	/**
-	 * The primary term works within the selected taxonomy.
+	 * The primary term works within the mapped taxonomy.
 	 *
 	 * @return void
 	 */
-	public function test_primary_term_within_the_selected_taxonomy() {
+	public function test_primary_term_within_the_mapped_taxonomy() {
 		$europe = new \WP_Term( 9, 'Europe', 'region' );
 		$asia   = new \WP_Term( 10, 'Asia', 'region' );
 		$this->stub_single_post(
@@ -134,13 +136,12 @@ class PrimaryTermTest extends TestCase {
 				9  => $europe,
 				10 => $asia,
 			],
-			[ 'breadcrumb_primary_term' => 10 ]
-		);
-		Monkey\Functions\when( 'get_the_terms' )->alias(
-			static fn ( $post, $taxonomy ) => 'region' === $taxonomy ? [ $europe, $asia ] : []
+			[ 'breadcrumb_primary_term' => 10 ],
+			'post',
+			[ 'post' => 'region' ]
 		);
 
-		$trail = $this->single_trail( [ 'taxonomy' => 'region' ] );
+		$trail = $this->single_trail();
 
 		$this->assertStringContainsString( '<span class="breadcrumb-item-name">Asia</span>', $trail );
 		$this->assertStringNotContainsString( 'Europe', $trail );
@@ -155,17 +156,13 @@ class PrimaryTermTest extends TestCase {
 		$news   = new \WP_Term( 7, 'News', 'category' );
 		$region = new \WP_Term( 9, 'Europe', 'region' );
 		$this->stub_single_post(
-			[
-				7 => $news,
-				9 => $region,
-			],
-			[ 'breadcrumb_primary_term' => 7 ]
-		);
-		Monkey\Functions\when( 'get_the_terms' )->alias(
-			static fn ( $post, $taxonomy ) => 'region' === $taxonomy ? [ $region ] : []
+			[ 7 => $news, 9 => $region ],
+			[ 'breadcrumb_primary_term' => 7 ],
+			'post',
+			[ 'post' => 'region' ]
 		);
 
-		$trail = $this->single_trail( [ 'taxonomy' => 'region' ] );
+		$trail = $this->single_trail();
 
 		$this->assertStringContainsString( '<span class="breadcrumb-item-name">Europe</span>', $trail );
 		$this->assertStringNotContainsString( 'News', $trail );
@@ -179,14 +176,7 @@ class PrimaryTermTest extends TestCase {
 	public function test_product_auto_uses_product_category() {
 		$ship = new \WP_Term( 11, 'Ships', 'product_cat' );
 		$fast = new \WP_Term( 12, 'Fast Shipping', 'product_cat' );
-		$this->stub_single_post(
-			[
-				11 => $ship,
-				12 => $fast,
-			],
-			[],
-			'product'
-		);
+		$this->stub_single_post( [ 11 => $ship, 12 => $fast ], [], 'product' );
 		Monkey\Functions\when( 'wc_get_product_terms' )->alias(
 			static fn () => [ $ship, $fast ]
 		);
@@ -207,10 +197,7 @@ class PrimaryTermTest extends TestCase {
 		$ship = new \WP_Term( 11, 'Ships', 'product_cat' );
 		$fast = new \WP_Term( 12, 'Fast Shipping', 'product_cat' );
 		$this->stub_single_post(
-			[
-				11 => $ship,
-				12 => $fast,
-			],
+			[ 11 => $ship, 12 => $fast ],
 			[ 'breadcrumb_primary_term' => 12 ],
 			'product'
 		);
@@ -235,10 +222,7 @@ class PrimaryTermTest extends TestCase {
 		$news = new \WP_Term( 7, 'News', 'category' );
 		$tech = new \WP_Term( 8, 'Tech', 'category' );
 		$this->stub_single_post(
-			[
-				7 => $news,
-				8 => $tech,
-			],
+			[ 7 => $news, 8 => $tech ],
 			[ 'breadcrumb_primary_term' => 8 ]
 		);
 		$this->override_apply_filters(
