@@ -172,6 +172,7 @@ abstract class TestCase extends PHPUnitTestCase {
 		);
 		Monkey\Functions\when( 'get_ancestors' )->justReturn( [] );
 		Monkey\Functions\when( 'get_term_meta' )->justReturn( '' );
+		Monkey\Functions\when( 'taxonomy_exists' )->justReturn( true );
 	}
 
 	/**

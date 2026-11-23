@@ -122,17 +122,42 @@ class PrimaryTermTest extends TestCase {
 	}
 
 	/**
-	 * The per-item primary term overrides the block taxonomy setting.
+	 * The primary term works within the selected taxonomy.
 	 *
 	 * @return void
 	 */
-	public function test_primary_term_overrides_the_block_taxonomy() {
+	public function test_primary_term_within_the_selected_taxonomy() {
+		$europe = new \WP_Term( 9, 'Europe', 'region' );
+		$asia   = new \WP_Term( 10, 'Asia', 'region' );
+		$this->stub_single_post(
+			[
+				9  => $europe,
+				10 => $asia,
+			],
+			[ 'breadcrumb_primary_term' => 10 ]
+		);
+		Monkey\Functions\when( 'get_the_terms' )->alias(
+			static fn ( $post, $taxonomy ) => 'region' === $taxonomy ? [ $europe, $asia ] : []
+		);
+
+		$trail = $this->single_trail( [ 'taxonomy' => 'region' ] );
+
+		$this->assertStringContainsString( '<span class="breadcrumb-item-name">Asia</span>', $trail );
+		$this->assertStringNotContainsString( 'Europe', $trail );
+	}
+
+	/**
+	 * A primary term from another taxonomy is ignored.
+	 *
+	 * @return void
+	 */
+	public function test_stale_primary_term_ignored_when_taxonomy_mismatches() {
 		$news   = new \WP_Term( 7, 'News', 'category' );
 		$region = new \WP_Term( 9, 'Europe', 'region' );
 		$this->stub_single_post(
 			[
-				7 => $news,
-				9 => $region,
+				7  => $news,
+				9  => $region,
 			],
 			[ 'breadcrumb_primary_term' => 7 ]
 		);
@@ -142,8 +167,8 @@ class PrimaryTermTest extends TestCase {
 
 		$trail = $this->single_trail( [ 'taxonomy' => 'region' ] );
 
-		$this->assertStringContainsString( '<span class="breadcrumb-item-name">News</span>', $trail );
-		$this->assertStringNotContainsString( 'Europe', $trail );
+		$this->assertStringContainsString( '<span class="breadcrumb-item-name">Europe</span>', $trail );
+		$this->assertStringNotContainsString( 'News', $trail );
 	}
 
 	/**
