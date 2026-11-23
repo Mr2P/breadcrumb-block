@@ -75,6 +75,19 @@ This is a single-block plugin for the breadcrumb trail. It's simple, lightweight
           }
         }, 10, 2 );
 
+6. How to show a shorter title for an item?
+
+    Each public post type and taxonomy has a `Breadcrumb short title` field: a panel in the block editor sidebar for posts, and a field on the term edit screens. When it is set, the trail and the JSON-LD structured data show the short title, while the item keeps its real title everywhere else.
+
+    To migrate short titles from other SEO plugins, or to override the value per item, use the `breadcrumb_block_get_short_title` filter. For example, to fall back to the Yoast SEO breadcrumb title:
+
+        add_filter( 'breadcrumb_block_get_short_title', function ( $short_title, $object ) {
+          if ( '' === $short_title && $object instanceof WP_Post ) {
+            return get_post_meta( $object->ID, '_yoast_wpseo_bctitle', true );
+          }
+          return $short_title;
+        }, 10, 2 );
+
 If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/breadcrumb-block/reviews/#new-post) on WordPress.org to help us spread the word. I would very much appreciate it.
 
 Please check out my other plugins if you're interested:
@@ -110,6 +123,9 @@ Anyone can use this plugin.
 1. Block settings
 
 == Changelog ==
+
+= Unreleased =
+* Added    - Breadcrumb short title: a per-post and per-term field to show a shorter label in the trail and the JSON-LD structured data
 
 = 1.1.1 =
 *Release Date - 07 May 2026*

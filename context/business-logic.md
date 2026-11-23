@@ -61,10 +61,18 @@ Empty label keys are filled with these defaults (all translatable, textdomain `b
 ## `add_item( string $name, string $link = '', array $attrs = [], array $context = [] ): void`
 
 1. Runs `wp_strip_all_tags( $name )`.
-2. Applies the `breadcrumb_block_get_item` filter with `[ $name, $link, $attrs ]`, the `$context`, and the instance.
-3. If the filtered value is truthy, appends it to `$items`; a `false` return removes the item.
+2. Replaces the name with the item's short title when set (see Short title below).
+3. Applies the `breadcrumb_block_get_item` filter with `[ $name, $link, $attrs ]`, the `$context`, and the instance.
+4. If the filtered value is truthy, appends it to `$items`; a `false` return removes the item.
 
 Note: internal call sites pass `[]` for attrs (an older version passed `false`; both are falsy, so markup is identical - only the value filter callbacks see changed).
+
+## Short title
+
+Each public post type and public taxonomy has a `breadcrumb_short_title` meta (key: `Short_Title::META_KEY`, registered in `includes/short-title.php`). When it is set on an item's object, `Breadcrumbs::apply_short_title()` swaps the item name before the `breadcrumb_block_get_item` filter runs, so the trail and the JSON-LD both show the short title.
+
+- UI: a "Breadcrumb short title" panel in the block editor sidebar (public post types, `src/short-title-panel.js`) and fields on the add/edit term forms (public taxonomies).
+- Filter `breadcrumb_block_get_short_title` ( string $short_title, \WP_Post|\WP_Term|null $object ): string - override or disable per item; return `''` to keep the real title. The readme documents a Yoast migration snippet using this filter.
 
 Item context (3rd arg to filters, `$context`): `[ 'type' => string, 'object' => WP_Post|WP_Term|WP_Post_Type|null ]`.
 

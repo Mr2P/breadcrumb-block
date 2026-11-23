@@ -16,6 +16,7 @@ Adds a Gutenberg block that outputs a breadcrumb navigation trail on the front e
 |------|------|
 | `breadcrumb-block.php` | Plugin entry. Namespace `BreadcrumbBlock`. Registers block on `init` with server render callback. |
 | `includes/breadcrumbs.php` | Core business logic: `BreadcrumbBlock\Breadcrumbs` singleton class. |
+| `includes/short-title.php` | Short title meta registration, term form UI; post editor sidebar panel in `src/short-title-panel.js`. |
 | `src/block.json` | Block metadata, attributes, supports (source of truth; copied to `build/` by `yarn build`). |
 | `src/index.js` | Block registration (`registerBlockType`, no `save` - server-rendered only). |
 | `src/edit.js` | Editor UI (InspectorControls: block settings + labels). |
@@ -85,6 +86,7 @@ PHP unit tests run with PHPUnit 9 + Brain Monkey (pure unit, no WordPress boot, 
 | `breadcrumb_block_structured_data` | filter | `$markup, $breadcrumbs` | Modify JSON-LD. |
 | `breadcrumb_block_product_terms_args` | filter | `$args` | Args for `wc_get_product_terms` on product singles. |
 | `breadcrumb_block_main_term` | filter | `$term, $terms, $taxonomy` | Pick the primary category / product category. |
+| `breadcrumb_block_get_short_title` | filter | `$short_title, $object` | Replace the item name with the short title from item meta. |
 | `breadcrumb_block_render_breadcrumb_trail` | action | `$breadcrumbs` | Fired during generation (triggers structured data). |
 | `breadcrumb_block_home_text` / `breadcrumb_block_home_url` | filter | value | Filter home label/URL. |
 | `breadcrumb_block_add_post_type_name` | filter | `true, $post, $breadcrumbs` | Return `false` to hide CPT archive name. |
