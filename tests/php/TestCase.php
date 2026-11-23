@@ -145,6 +145,80 @@ abstract class TestCase extends PHPUnitTestCase {
 	}
 
 	/**
+	 * Stub a single-post context: terms by id, post meta, and the editor globals.
+	 *
+	 * @param array  $terms_by_id Assigned WP_Term stubs keyed by term id.
+	 * @param array  $meta        Post meta values keyed by meta key.
+	 * @param string $post_type   The post type of the single post.
+	 * @return void
+	 */
+	protected function stub_single_post( array $terms_by_id, array $meta = [], string $post_type = 'post' ): void {
+		$this->stub_terms( $terms_by_id );
+		$this->stub_post_meta( $meta );
+		$this->stub_query_conditionals( [ 'is_single' ] );
+
+		Monkey\Functions\when( 'get_post' )->alias(
+			static fn ( $id = 0 ) => new \WP_Post( 42 )
+		);
+		Monkey\Functions\when( 'get_post_type' )->justReturn( $post_type );
+		Monkey\Functions\when( 'get_the_title' )->justReturn( 'Long Post Title' );
+		Monkey\Functions\when( 'get_permalink' )->justReturn( 'http://example.org/long-post/' );
+		Monkey\Functions\when( 'get_the_category' )->alias(
+			static fn () => array_values( $terms_by_id )
+		);
+		Monkey\Functions\when( 'get_term_link' )->alias(
+			static fn ( $term ) => 'http://example.org/term/' . (int) ( $term->term_id ?? 0 ) . '/'
+		);
+		Monkey\Functions\when( 'get_ancestors' )->justReturn( [] );
+		Monkey\Functions\when( 'get_term_meta' )->justReturn( '' );
+	}
+
+	/**
+	 * Build the single-post trail.
+	 *
+	 * @param array $args Trail arguments.
+	 * @return string
+	 */
+	protected function single_trail( array $args = [] ): string {
+		$GLOBALS['post'] = new \WP_Post( 42 ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Simulating the WordPress global for the single-post trail.
+
+		$breadcrumbs = Breadcrumbs::get_instance();
+
+		return $breadcrumbs->get_breadcrumb_trail( $args );
+	}
+
+	/**
+	 * Stub terms keyed by id, and has_term() against the assigned ids.
+	 *
+	 * @param array $terms_by_id WP_Term stubs keyed by term id.
+	 * @return void
+	 */
+	private function stub_terms( array $terms_by_id ): void {
+		Monkey\Functions\when( 'get_term' )->alias(
+			static function ( $id ) use ( $terms_by_id ) {
+				return $terms_by_id[ (int) $id ] ?? null;
+			}
+		);
+		Monkey\Functions\when( 'has_term' )->alias(
+			static fn ( $term ) => array_key_exists( (int) $term, $terms_by_id )
+		);
+	}
+
+	/**
+	 * Stub post meta values keyed by meta key.
+	 *
+	 * @param array $meta Meta values keyed by meta key.
+	 * @return void
+	 */
+	private function stub_post_meta( array $meta ): void {
+		Monkey\Functions\when( 'get_post_meta' )->alias(
+			static function ( $id, $key = '', $single = false ) use ( $meta ) {
+				return $meta[ $key ] ?? '';
+			}
+		);
+	}
+
+	/**
 	 * Reset the Breadcrumbs singleton between tests.
 	 *
 	 * @return void

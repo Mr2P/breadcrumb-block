@@ -56,13 +56,29 @@ class WP_Term {
 	public $name = '';
 
 	/**
+	 * Term taxonomy.
+	 *
+	 * @var string
+	 */
+	public $taxonomy = '';
+
+	/**
+	 * Parent term ID.
+	 *
+	 * @var int
+	 */
+	public $parent = 0;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param int    $id   Term ID.
-	 * @param string $name Term name.
+	 * @param int    $id       Term ID.
+	 * @param string $name     Term name.
+	 * @param string $taxonomy Term taxonomy.
 	 */
-	public function __construct( $id = 0, $name = '' ) {
-		$this->term_id = (int) $id;
-		$this->name    = (string) $name;
+	public function __construct( $id = 0, $name = '', $taxonomy = '' ) {
+		$this->term_id  = (int) $id;
+		$this->name     = (string) $name;
+		$this->taxonomy = (string) $taxonomy;
 	}
 }
