@@ -79,10 +79,10 @@ Each public post type and public taxonomy has a `breadcrumb_short_title` meta (k
 
 Two-level selection of which term path leads to a single item:
 
-- **Block setting** (attribute `taxonomy`, default `""` = Auto): which taxonomy feeds single-item trails. Auto = `category` for posts, `product_cat` for products. An explicit choice (public hierarchical taxonomies) makes any post type use that taxonomy's term path. A configured taxonomy without assigned terms falls back to Auto.
-- **Per item** (meta `breadcrumb_primary_term`, integer term id, `Primary_Term::META_KEY`, registered in `includes/primary-term.php`): when set, the term is assigned to the post, **and** the term belongs to the taxonomy shown for single items (the block setting), the trail and the JSON-LD lead through that term and its ancestors. Otherwise the primary term is ignored and the default path applies.
+- **Site level** (Settings > Breadcrumb Block, option `breadcrumb_block_taxonomies` = post type => taxonomy slug, `Settings::OPTION_KEY`): which taxonomy feeds single-item trails per post type. Unmapped types use the Auto default: `category` for posts, `product_cat` for products, no term path for others. A mapped taxonomy without assigned terms for an item falls back to the type default. Registered with `show_in_rest` so the editor panel can read it.
+- **Per item** (meta `breadcrumb_primary_term`, integer term id, `Primary_Term::META_KEY`, registered in `includes/primary-term.php`): when set, the term is assigned to the post, **and** the term belongs to the taxonomy mapped for its post type, the trail and the JSON-LD lead through that term and its ancestors. Otherwise the primary term is ignored and the site-level mapping applies.
 
-The panel (`src/breadcrumb-panel.js`) follows the same scoping: it lists the terms of the taxonomy selected in the breadcrumb block (or the first hierarchical taxonomy of the post type when the block is placed in a template), assigned to the post. `breadcrumb_block_main_term` applies to the default pick only; filter the primary term via `breadcrumb_block_get_primary_term`.
+The panel (`src/breadcrumb-panel.js`) reads the site mapping and lists the post's assigned terms of the mapped taxonomy. `breadcrumb_block_main_term` applies to the default pick only; filter the primary term via `breadcrumb_block_get_primary_term`. The resolution lives in `Breadcrumbs::single_taxonomy_for()` (mapping + type default) and `primary_term_for()`.
 
 Item context (3rd arg to filters, `$context`): `[ 'type' => string, 'object' => WP_Post|WP_Term|WP_Post_Type|null ]`.
 
