@@ -124,7 +124,7 @@ if ( ! class_exists( Settings::class ) ) {
 		/**
 		 * Render the taxonomy dropdown for one post type.
 		 *
-		 * @param array $args The post type object and its hierarchical taxonomies.
+		 * @param array $args The post type object and its public taxonomies.
 		 *
 		 * @return void
 		 */
@@ -134,7 +134,7 @@ if ( ! class_exists( Settings::class ) ) {
 			$mapping    = get_option( self::OPTION_KEY, [] );
 			$current    = is_array( $mapping ) ? ( $mapping[ $post_type->name ] ?? '' ) : '';
 			?>
-			<select id="<?php echo esc_attr( self::OPTION_KEY . '-' . $post_type->name ); ?>" name="<?php echo esc_attr( self::OPTION_KEY . "[{$post_type->name}]" ); ?>">
+			<select id="<?php echo esc_attr( self::OPTION_KEY . '-' . $post_type->name ); ?>" name="<?php echo esc_attr( self::OPTION_KEY . '[' . $post_type->name . ']' ); ?>">
 				<option value=""><?php esc_html_e( 'Default', 'breadcrumb-block' ); ?></option>
 				<?php foreach ( $taxonomies as $taxonomy ) : ?>
 					<option value="<?php echo esc_attr( $taxonomy->name ); ?>" <?php selected( $current, $taxonomy->name ); ?>>
@@ -181,18 +181,18 @@ if ( ! class_exists( Settings::class ) ) {
 		/**
 		 * Sanitize the taxonomy mapping against each type's real taxonomies.
 		 *
-		 * @param array|mixed $input Raw settings input.
+		 * @param array|mixed $input Raw mapping: post type => taxonomy slug.
 		 * @return array
 		 */
 		public static function sanitize_taxonomies( $input ): array {
-			$input = is_array( $input ) ? wp_unslash( $input ) : [];
-			$input = $input['taxonomies'] ?? [];
+			$input = is_array( $input ) ? array_map( 'wp_unslash', $input ) : [];
 			$clean = [];
 
-			foreach ( self::post_types_with_taxonomies() as $post_type_name => $data ) {
-				$taxonomy = isset( $input[ $post_type_name ] ) ? sanitize_key( $input[ $post_type_name ] ) : '';
+			foreach ( $input as $post_type_name => $taxonomy ) {
+				$post_type_name = sanitize_key( is_string( $post_type_name ) ? $post_type_name : '' );
+				$taxonomy       = sanitize_key( is_string( $taxonomy ) ? $taxonomy : '' );
 
-				if ( '' === $taxonomy ) {
+				if ( '' === $post_type_name || '' === $taxonomy ) {
 					continue;
 				}
 

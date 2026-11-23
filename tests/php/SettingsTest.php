@@ -51,10 +51,8 @@ class SettingsTest extends TestCase {
 
 		$clean = \BreadcrumbBlock\Settings::sanitize_taxonomies(
 			[
-				'taxonomies' => [
-					'post' => 'post_tag',
-					'docs' => 'doc-section',
-				],
+				'post' => 'post_tag',
+				'docs' => 'doc-section',
 			]
 		);
 
@@ -95,10 +93,8 @@ class SettingsTest extends TestCase {
 
 		$clean = \BreadcrumbBlock\Settings::sanitize_taxonomies(
 			[
-				'taxonomies' => [
-					'docs'       => 'doc-section',
-					'uknowntype' => 'category',
-				],
+				'docs'       => 'doc-section',
+				'uknowntype' => 'category',
 			]
 		);
 
@@ -127,7 +123,7 @@ class SettingsTest extends TestCase {
 		Monkey\Functions\when( 'wp_unslash' )->returnArg();
 
 		$clean = \BreadcrumbBlock\Settings::sanitize_taxonomies(
-			[ 'taxonomies' => [ 'post' => 'category' ] ]
+			[ 'post' => 'category' ]
 		);
 
 		$this->assertSame( [], $clean );
