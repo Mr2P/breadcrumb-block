@@ -88,6 +88,25 @@ This is a single-block plugin for the breadcrumb trail. It's simple, lightweight
           return $short_title;
         }, 10, 2 );
 
+7. How to show a different taxonomy or term for a single item?
+
+    The block settings include a `Taxonomy for single items` dropdown (Auto by default - `category` for posts, `product_cat` for products). Pick a public hierarchical taxonomy and the trail will lead through its terms for every item of that type.
+
+    To pin a specific term per post, use the `Primary term` dropdown in the `Breadcrumb` sidebar panel: it lists the terms assigned to the post, and the selected term (with its parent terms) replaces the default one in the trail and the JSON-LD. When nothing is selected, the default applies.
+
+    To migrate primary terms from Yoast SEO, or to override the value per item, use the `breadcrumb_block_get_primary_term` filter. For example, to fall back to the Yoast primary category:
+
+        add_filter( 'breadcrumb_block_get_primary_term', function ( $primary_term, $post ) {
+          if ( ! $primary_term && class_exists( 'WPSEO_Primary_Term' ) ) {
+            $yoast_primary = new WPSEO_Primary_Term( 'category', $post->ID );
+            $term_id = $yoast_primary->get_primary_term();
+            if ( $term_id ) {
+              return get_term( $term_id );
+            }
+          }
+          return $primary_term;
+        }, 10, 2 );
+
 If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/breadcrumb-block/reviews/#new-post) on WordPress.org to help us spread the word. I would very much appreciate it.
 
 Please check out my other plugins if you're interested:
@@ -125,6 +144,7 @@ Anyone can use this plugin.
 == Changelog ==
 
 = Unreleased =
+* Added    - Primary term selection: choose the taxonomy shown for single-item trails in the block settings, and a per-post primary term in the Breadcrumb sidebar panel
 * Added    - Breadcrumb short title: a per-post and per-term field to show a shorter label in the trail and the JSON-LD structured data
 
 = 1.1.1 =

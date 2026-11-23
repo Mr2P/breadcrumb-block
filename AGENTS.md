@@ -8,7 +8,7 @@ Single-block WordPress breadcrumb plugin. Renders a breadcrumb trail (server-sid
 
 ## What this plugin does
 
-Adds a Gutenberg block that outputs a breadcrumb navigation trail on the front end. The block is configurable from the editor (separator, gap, hide home/current page, custom labels). The breadcrumb logic runs in PHP and adapts to the current query: home, single post, page, archive, category, tag, date, author, search, 404, attachment, and WooCommerce shop/product/tag/category pages.
+Adds a Gutenberg block that outputs a breadcrumb navigation trail on the front end. The block is configurable from the editor (separator, gap, hide home/current page, custom labels, short title, primary term, taxonomy for single items). The breadcrumb logic runs in PHP and adapts to the current query: home, single post, page, archive, category, tag, date, author, search, 404, attachment, and WooCommerce shop/product/tag/category pages.
 
 ## Key files
 
@@ -16,7 +16,8 @@ Adds a Gutenberg block that outputs a breadcrumb navigation trail on the front e
 |------|------|
 | `breadcrumb-block.php` | Plugin entry. Namespace `BreadcrumbBlock`. Registers block on `init` with server render callback. |
 | `includes/breadcrumbs.php` | Core business logic: `BreadcrumbBlock\Breadcrumbs` singleton class. |
-| `includes/short-title.php` | Short title meta registration, term form UI; post editor sidebar panel in `src/short-title-panel.js`. |
+| `includes/short-title.php` | Short title meta registration, term form UI. |
+| `includes/primary-term.php` | Primary term meta registration. |
 | `src/block.json` | Block metadata, attributes, supports (source of truth; copied to `build/` by `yarn build`). |
 | `src/index.js` | Block registration (`registerBlockType`, no `save` - server-rendered only). |
 | `src/edit.js` | Editor UI (InspectorControls: block settings + labels). |
@@ -56,7 +57,7 @@ PHP unit tests run with PHPUnit 9 + Brain Monkey (pure unit, no WordPress boot, 
 1. `init` -> `breadcrumb_block_block_init()` -> `register_block_type( __DIR__ . '/build', [ 'render_callback' => 'BreadcrumbBlock\breadcrumb_block_render_block' ] )`.
 2. `breadcrumb_block_render_block( $attributes, $content, $block )`:
    - Merges `homeText` into `labels.home`.
-   - Calls `Breadcrumbs::get_instance()->get_breadcrumb_trail( [ 'separator', 'labels' ] )`.
+   - Calls `Breadcrumbs::get_instance()->get_breadcrumb_trail( [ 'separator', 'taxonomy', 'labels' ] )`.
    - Sets CSS var `--bb--crumb-gap` from `gap` attribute.
    - Adds classes `hide-home-page` / `hide-current-page` when enabled.
    - Returns `<div {wrapper}>{trail}</div>`.
@@ -69,6 +70,7 @@ PHP unit tests run with PHPUnit 9 + Brain Monkey (pure unit, no WordPress boot, 
 |-----------|------|---------|
 | `gap` | string | `.4em` |
 | `separator` | string | `/` |
+| `taxonomy` | string | `""` (Auto: `category` for posts, `product_cat` for products - the taxonomy shown for single-item trails) |
 | `hideHomePage` | boolean | `false` |
 | `hideCurrentPage` | boolean | `false` |
 | `homeText` | string | `""` (legacy, migrated to `labels.home` in editor) |
@@ -87,6 +89,7 @@ PHP unit tests run with PHPUnit 9 + Brain Monkey (pure unit, no WordPress boot, 
 | `breadcrumb_block_product_terms_args` | filter | `$args` | Args for `wc_get_product_terms` on product singles. |
 | `breadcrumb_block_main_term` | filter | `$term, $terms, $taxonomy` | Pick the primary category / product category. |
 | `breadcrumb_block_get_short_title` | filter | `$short_title, $object` | Replace the item name with the short title from item meta. |
+| `breadcrumb_block_get_primary_term` | filter | `$primary_term, $post` | Replace or disable the per-item primary term. |
 | `breadcrumb_block_render_breadcrumb_trail` | action | `$breadcrumbs` | Fired during generation (triggers structured data). |
 | `breadcrumb_block_home_text` / `breadcrumb_block_home_url` | filter | value | Filter home label/URL. |
 | `breadcrumb_block_add_post_type_name` | filter | `true, $post, $breadcrumbs` | Return `false` to hide CPT archive name. |
