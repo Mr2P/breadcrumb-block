@@ -8,18 +8,20 @@ Single-item trails always show the first category (posts) or the first product c
 
 Two levels, Yoast-style:
 
-1. **Block setting** (attribute `taxonomy`, default `""` = Auto): which taxonomy feeds single-item trails. Auto = current behavior (`category` for posts, `product_cat` for products). An explicit choice (public hierarchical taxonomies) makes single-item trails use that taxonomy's term path - term + ancestors - for **any** post type. When the configured taxonomy has no assigned terms for the current item, the trail falls back to the Auto behavior (never empty).
-2. **Per-item primary term** (post meta `breadcrumb_primary_term`, integer term id, registered on public post types): when set **and** the term is assigned to the post, the trail and the JSON-LD lead through that term (any taxonomy of the post, ancestors included) - overriding both the Auto default and the block setting. Empty/zero/not-assigned → Level 1 applies.
+1. **Site level** (Settings > Breadcrumb Block): a per-post-type taxonomy mapping - each public post type (that has hierarchical public taxonomies) gets a dropdown to choose the taxonomy shown for its single-item trails. Default = Auto (no mapping): `category` for posts, `product_cat` for products, no term path for other types. A mapped taxonomy without assigned terms for an item falls back to the type default (the trail is never emptied). Stored in the `breadcrumb_block_taxonomies` option.
+2. **Per-item primary term** (post meta `breadcrumb_primary_term`, integer term id, registered on public post types): when set **and** the term is assigned to the post **and** the term belongs to the mapped taxonomy, the trail and the JSON-LD lead through that term (ancestors included) - overriding the site-level mapping. Otherwise the site-level mapping applies.
 
-The JSON-LD inherits both levels automatically: the structured data is generated from the same items array during the same render pass that consumes the block setting (schema exists exactly where the visible trail exists).
+The JSON-LD inherits both levels automatically: the structured data is generated from the same items array during the same render pass (schema exists exactly where the visible trail exists).
 
-UI: the sidebar panel becomes a single "Breadcrumb" panel with the Short title field and the Primary term dropdown (the post's assigned terms of hierarchical taxonomies, labeled with the taxonomy name; a "Default" option clears the override).
+UI: a Settings > Breadcrumb Block screen with one dropdown per public post type (listing that type's hierarchical public taxonomies, plus "Default"), and the sidebar panel becomes a single "Breadcrumb" panel with the Short title field and the Primary term dropdown (the post's assigned terms of the mapped taxonomy; a "Default" option clears the override). The panel reads the site mapping - no per-template resolution needed.
 
 ## Contracts
 
 - Filter `breadcrumb_block_get_primary_term` ( ?\WP_Term $primary_term, \WP_Post $post ): ?\WP_Term - override the resolved primary term; return `null` to disable and fall back to the default path.
 - `breadcrumb_block_main_term` still picks the default term on the default path; it does **not** run when a primary term is selected (the primary selection is final - filter that via `breadcrumb_block_get_primary_term`).
 - Meta: `breadcrumb_primary_term` (integer) on public post types; `breadcrumb_short_title` unchanged.
+- Option: `breadcrumb_block_taxonomies` (object, post type => taxonomy slug), sanitized against each type's hierarchical public taxonomies.
+- The block attribute `taxonomy` is removed (superseded by the site-level mapping).
 
 ## Out of scope
 
