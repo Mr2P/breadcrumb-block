@@ -208,7 +208,7 @@ abstract class TestCase extends PHPUnitTestCase {
 	 * @param array $terms_by_id WP_Term stubs keyed by term id.
 	 * @return void
 	 */
-	private function stub_terms( array $terms_by_id ): void {
+	protected function stub_terms( array $terms_by_id ): void {
 		Monkey\Functions\when( 'get_term' )->alias(
 			static function ( $id ) use ( $terms_by_id ) {
 				return $terms_by_id[ (int) $id ] ?? null;
@@ -225,7 +225,7 @@ abstract class TestCase extends PHPUnitTestCase {
 	 * @param array $meta Meta values keyed by meta key.
 	 * @return void
 	 */
-	private function stub_post_meta( array $meta ): void {
+	protected function stub_post_meta( array $meta ): void {
 		Monkey\Functions\when( 'get_post_meta' )->alias(
 			static function ( $id, $key = '' ) use ( $meta ) {
 				return $meta[ $key ] ?? '';
