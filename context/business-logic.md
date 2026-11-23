@@ -40,7 +40,6 @@ Constructor hooks:
 | `item_tag` | `li` | Item element. |
 | `item_before` / `item_after` | `''` | Raw markup inside each item (currently unused by the block). |
 | `separator` | `''` | Block passes the `separator` attribute. |
-| `taxonomy` | `''` | Block passes the `taxonomy` attribute - the taxonomy shown for single items (empty = Auto: `category` for posts, `product_cat` for products). |
 | `aria_label` | `Breadcrumbs` (translatable) | `aria-label` on the container. |
 | `labels` | `[]` | See labels below. |
 | `echo` | `false` | Echo instead of return. |
@@ -123,13 +122,18 @@ Finally applies the `breadcrumb_block_get_items` filter to the whole array.
 
 1. Fires `breadcrumb_block_single_prepend` action (add items before everything).
 2. **Products** (`product` post type, WooCommerce only): `prepend_shop_page()` - adds the shop page when the product permalink base contains the shop slug and the shop is not the front page.
-3. **Main term** (`get_single_main_term()`): the per-item **primary term** (meta `breadcrumb_primary_term`, when set and assigned to the post; filtered by `breadcrumb_block_get_primary_term`) wins - its taxonomy path (term + ancestors via `term_ancestors`) is used, overriding both defaults. Otherwise the **block taxonomy** (the `taxonomy` block attribute) when set: the item's assigned terms of that taxonomy, main term pickable through the `breadcrumb_block_main_term` filter. Otherwise the **type default**: `product_cat` via `wc_get_product_terms` (args filtered by `breadcrumb_block_product_terms_args`) for products, first `category` for posts. A configured taxonomy without assigned terms falls back to the type default - the trail is never emptied.
-4. **When no main term resolves**: other post types get the post type archive item (when `has_archive`, skippable via the `breadcrumb_block_add_post_type_name` filter) and the parent chain via `add_parent_crumbs`; posts and products get no term path.
+3. **Main term** (`get_single_main_term()`): the per-item **primary term** (meta `breadcrumb_primary_term`, when set and assigned to the post; filtered by `breadcrumb_block_get_primary_term`) wins - its taxonomy path (term + ancestors via `term_ancestors`) is used, overriding both defaults. Otherwise the **site-level mapping** (`single_taxonomy_for()`: the `breadcrumb_block_taxonomies` option, per post type) when set: the item's assigned terms of that taxonomy, main term pickable through the `breadcrumb_block_main_term` filter. Otherwise the **type default**: `product_cat` via `wc_get_product_terms` (args filtered by `breadcrumb_block_product_terms_args`) for products, first `category` for posts. A configured taxonomy without assigned terms falls back to the type default - the trail is never emptied.
+4. **When no main term resolves**: other post types get the post type archive item (when `has_archive`, skippable via `breadcrumb_block_add_post_type_name`) and the parent chain via `add_parent_crumbs`; posts and products get no term path.
 5. Fires `breadcrumb_block_single` and `breadcrumb_block_single_{post_type}` actions.
 6. Adds the post title as the current item (`aria-current="page"`).
 
 ### Helpers
 
+- `single_taxonomy_for( \WP_Post $post ): string` - resolves the taxonomy for single-item trails: reads the `breadcrumb_block_taxonomies` option per post type, falls back to `category` for posts and `product_cat` for products, `''` for unmapped CPTs.
+- `get_single_main_term( \WP_Post $post ): ?\WP_Term` - resolves the main term: primary term meta first, then `default_main_term()`.
+- `default_main_term( \WP_Post $post, string $taxonomy ): ?\WP_Term` - picks the default main term from the configured or default taxonomy.
+- `main_term_from_terms( $terms, string $taxonomy ): ?\WP_Term` - picks the first term via `breadcrumb_block_main_term`; returns `null` on error or empty.
+- `primary_term_for( \WP_Post $post, string $taxonomy ): ?\WP_Term` - reads the `breadcrumb_primary_term` meta, validates the term exists, matches the taxonomy, and is assigned to the post; filtered by `breadcrumb_block_get_primary_term`.
 - `add_parent_crumbs( $parent_id )` - walks the `post_parent` chain, stops at the front page, collects then reverses so the topmost ancestor comes first. Context `page` for pages, `post` otherwise.
 - `term_ancestors( $term_id, $taxonomy )` - `get_ancestors()` reversed, each ancestor added with context `term`.
 - `prepend_shop_page()` - see products above. Context `shop`.
