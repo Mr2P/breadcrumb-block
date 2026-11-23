@@ -47,6 +47,11 @@
     <exclude-pattern>tests/*</exclude-pattern>
   </rule>
 
+  <!-- Test doubles stub functions with the real signature; unused params are intentional. -->
+  <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
+    <exclude-pattern>tests/*</exclude-pattern>
+  </rule>
+
   <!-- Provide several extra delimiters as one string -->
   <rule ref="WordPress.NamingConventions.ValidHookName">
     <properties>
