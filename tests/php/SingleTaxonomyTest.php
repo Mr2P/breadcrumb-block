@@ -28,7 +28,7 @@ class SingleTaxonomyTest extends TestCase {
 		$method      = new \ReflectionMethod( Breadcrumbs::class, 'single_taxonomy_for' );
 		$method->setAccessible( true );
 
-		$post  = $this->make_post( 'docs' );
+		$post   = $this->make_post( 'docs' );
 		$result = $method->invoke( $breadcrumbs, $post );
 
 		$this->assertSame( 'doc-section', $result );
