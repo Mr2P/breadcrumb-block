@@ -8,7 +8,6 @@ import clsx from "clsx";
  */
 import { __ } from "@wordpress/i18n";
 import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
-/* eslint-disable @wordpress/no-unsafe-wp-apis -- ToolsPanel/ToolsPanelItem are still exported as __experimental in WordPress core (same imports core blocks use); drop this when they graduate. */
 import {
   ToggleControl,
   TextControl,
@@ -18,7 +17,6 @@ import {
   __experimentalToolsPanel as ToolsPanel,
   __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
-/* eslint-enable @wordpress/no-unsafe-wp-apis */
 import { useEffect } from "@wordpress/element";
 
 /**

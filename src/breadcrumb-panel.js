@@ -3,13 +3,11 @@
  */
 import { registerPlugin } from "@wordpress/plugins";
 import { PluginDocumentSettingPanel } from "@wordpress/editor";
-/* eslint-disable @wordpress/no-unsafe-wp-apis -- ToolsPanel/ToolsPanelItem/VStack are still exported as __experimental in WordPress core; drop this when they graduate. */
 import {
   SelectControl,
   TextControl,
   __experimentalVStack as VStack,
 } from "@wordpress/components";
-/* eslint-enable @wordpress/no-unsafe-wp-apis */
 import { useSelect } from "@wordpress/data";
 import { useEntityProp } from "@wordpress/core-data";
 import { __ } from "@wordpress/i18n";
