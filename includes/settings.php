@@ -134,7 +134,7 @@ if ( ! class_exists( Settings::class ) ) {
 			$mapping    = get_option( self::OPTION_KEY, [] );
 			$current    = is_array( $mapping ) ? ( $mapping[ $post_type->name ] ?? '' ) : '';
 			?>
-			<select id="<?php echo esc_attr( self::OPTION_KEY . '-' . $post_type->name ); ?>" name="<?php echo esc_attr( self::OPTION_KEY . '[' . $post_type->name . ']' ); ?>">
+			<select class="regular-text" id="<?php echo esc_attr( self::OPTION_KEY . '-' . $post_type->name ); ?>" name="<?php echo esc_attr( self::OPTION_KEY . '[' . $post_type->name . ']' ); ?>">
 				<option value=""><?php esc_html_e( 'Default', 'breadcrumb-block' ); ?></option>
 				<?php foreach ( $taxonomies as $taxonomy ) : ?>
 					<option value="<?php echo esc_attr( $taxonomy->name ); ?>" <?php selected( $current, $taxonomy->name ); ?>>
