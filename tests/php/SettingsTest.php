@@ -58,7 +58,13 @@ class SettingsTest extends TestCase {
 			]
 		);
 
-		$this->assertSame( [ 'post' => 'post_tag', 'docs' => 'doc-section' ], $clean );
+		$this->assertSame(
+			[
+				'post' => 'post_tag',
+				'docs' => 'doc-section',
+			],
+			$clean
+		);
 	}
 
 	/**
@@ -69,7 +75,6 @@ class SettingsTest extends TestCase {
 	public function test_sanitize_drops_invalid_mappings() {
 		$category     = new \WP_Taxonomy( 'category', true, [ 'post' ] );
 		$doc_sections = new \WP_Taxonomy( 'doc-section', true, [ 'docs' ] );
-		$doc_sections->public = false;
 
 		Monkey\Functions\when( 'get_post_types' )->justReturn(
 			[
@@ -78,7 +83,7 @@ class SettingsTest extends TestCase {
 			]
 		);
 		Monkey\Functions\when( 'get_object_taxonomies' )->alias(
-			static fn ( $post_type ) => 'docs' === $post_type ? [ $doc_sections ] : []
+			static fn ( $post_type ) => 'docs' === $post_type ? [ $doc_sections ] : [ $category ]
 		);
 		Monkey\Functions\when( 'get_taxonomy' )->alias(
 			static function ( $slug ) use ( $category, $doc_sections ) {
@@ -106,7 +111,7 @@ class SettingsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_sanitize_drops_non_public_taxonomy() {
-		$category = new \WP_Taxonomy( 'category', true, [ 'post' ] );
+		$category         = new \WP_Taxonomy( 'category', true, [ 'post' ] );
 		$category->public = false;
 
 		Monkey\Functions\when( 'get_post_types' )->justReturn(

@@ -91,7 +91,10 @@ class PrimaryTermTest extends TestCase {
 		$news   = new \WP_Term( 7, 'News', 'category' );
 		$region = new \WP_Term( 9, 'Europe', 'region' );
 		$this->stub_single_post(
-			[ 7 => $news, 9 => $region ],
+			[
+				7 => $news,
+				9 => $region,
+			],
 			[],
 			'post',
 			[ 'post' => 'region' ]
@@ -162,7 +165,10 @@ class PrimaryTermTest extends TestCase {
 		$news   = new \WP_Term( 7, 'News', 'category' );
 		$region = new \WP_Term( 9, 'Europe', 'region' );
 		$this->stub_single_post(
-			[ 7 => $news, 9 => $region ],
+			[
+				7 => $news,
+				9 => $region,
+			],
 			[ 'breadcrumb_primary_term' => 7 ],
 			'post',
 			[ 'post' => 'region' ]
@@ -186,7 +192,10 @@ class PrimaryTermTest extends TestCase {
 		$ship = new \WP_Term( 11, 'Ships', 'product_cat' );
 		$fast = new \WP_Term( 12, 'Fast Shipping', 'product_cat' );
 		$this->stub_single_post(
-			[ 11 => $ship, 12 => $fast ],
+			[
+				11 => $ship,
+				12 => $fast,
+			],
 			[],
 			'product'
 		);
@@ -210,7 +219,10 @@ class PrimaryTermTest extends TestCase {
 		$ship = new \WP_Term( 11, 'Ships', 'product_cat' );
 		$fast = new \WP_Term( 12, 'Fast Shipping', 'product_cat' );
 		$this->stub_single_post(
-			[ 11 => $ship, 12 => $fast ],
+			[
+				11 => $ship,
+				12 => $fast,
+			],
 			[ 'breadcrumb_primary_term' => 12 ],
 			'product'
 		);
@@ -235,7 +247,10 @@ class PrimaryTermTest extends TestCase {
 		$news = new \WP_Term( 7, 'News', 'category' );
 		$tech = new \WP_Term( 8, 'Tech', 'category' );
 		$this->stub_single_post(
-			[ 7 => $news, 8 => $tech ],
+			[
+				7 => $news,
+				8 => $tech,
+			],
 			[ 'breadcrumb_primary_term' => 8 ]
 		);
 		$this->override_apply_filters(
@@ -262,7 +277,10 @@ class PrimaryTermTest extends TestCase {
 		$news = new \WP_Term( 7, 'News', 'category' );
 		$tag  = new \WP_Term( 13, 'Featured', 'post_tag' );
 		$this->stub_single_post(
-			[ 7 => $news, 13 => $tag ],
+			[
+				7  => $news,
+				13 => $tag,
+			],
 			[],
 			'post',
 			[ 'post' => 'post_tag' ]

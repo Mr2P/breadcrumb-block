@@ -146,7 +146,11 @@ if ( ! class_exists( Settings::class ) ) {
 		}
 
 		/**
-		 * Public post types that have hierarchical public taxonomies.
+		 * Public post types whose single-item trails can include a term, with
+		 * their public taxonomies.
+		 *
+		 * Pages and attachments never show a term in their trails: no taxonomy
+		 * to map.
 		 *
 		 * @return array Post type data keyed by post type name.
 		 */
@@ -154,15 +158,19 @@ if ( ! class_exists( Settings::class ) ) {
 			$types = [];
 
 			foreach ( get_post_types( [ 'public' => true ], 'objects' ) as $post_type ) {
-				$hierarchical = array_filter(
+				if ( in_array( $post_type->name, [ 'attachment', 'page' ], true ) ) {
+					continue;
+				}
+
+				$taxonomies = array_filter(
 					get_object_taxonomies( $post_type->name, 'objects' ),
-					static fn ( $taxonomy ) => $taxonomy->hierarchical && $taxonomy->public
+					static fn ( $taxonomy ) => $taxonomy->public
 				);
 
-				if ( $hierarchical ) {
+				if ( $taxonomies ) {
 					$types[ $post_type->name ] = [
 						'object'     => $post_type,
-						'taxonomies' => $hierarchical,
+						'taxonomies' => $taxonomies,
 					];
 				}
 			}
@@ -190,7 +198,7 @@ if ( ! class_exists( Settings::class ) ) {
 
 				$taxonomy_object = get_taxonomy( $taxonomy );
 
-				if ( $taxonomy_object && $taxonomy_object->hierarchical && in_array( $post_type_name, $taxonomy_object->object_type, true ) ) {
+				if ( $taxonomy_object && $taxonomy_object->public && in_array( $post_type_name, $taxonomy_object->object_type, true ) ) {
 					$clean[ $post_type_name ] = sanitize_key( $taxonomy );
 				}
 			}
