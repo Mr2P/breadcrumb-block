@@ -80,9 +80,9 @@ Each public post type and public taxonomy has a `breadcrumb_short_title` meta (k
 Two-level selection of which term path leads to a single item:
 
 - **Block setting** (attribute `taxonomy`, default `""` = Auto): which taxonomy feeds single-item trails. Auto = `category` for posts, `product_cat` for products. An explicit choice (public hierarchical taxonomies) makes any post type use that taxonomy's term path. A configured taxonomy without assigned terms falls back to Auto.
-- **Per item** (meta `breadcrumb_primary_term`, integer term id, `Primary_Term::META_KEY`, registered in `includes/primary-term.php`): when set and the term is assigned to the post, the trail and the JSON-LD lead through that term and its ancestors - overriding both the Auto default and the block setting.
+- **Per item** (meta `breadcrumb_primary_term`, integer term id, `Primary_Term::META_KEY`, registered in `includes/primary-term.php`): when set, the term is assigned to the post, **and** the term belongs to the taxonomy shown for single items (the block setting), the trail and the JSON-LD lead through that term and its ancestors. Otherwise the primary term is ignored and the default path applies.
 
-The panel (`src/breadcrumb-panel.js`) lists the post's assigned terms of hierarchical taxonomies. `breadcrumb_block_main_term` applies to the default pick only; filter the primary term via `breadcrumb_block_get_primary_term`.
+The panel (`src/breadcrumb-panel.js`) follows the same scoping: it lists the terms of the taxonomy selected in the breadcrumb block (or the first hierarchical taxonomy of the post type when the block is placed in a template), assigned to the post. `breadcrumb_block_main_term` applies to the default pick only; filter the primary term via `breadcrumb_block_get_primary_term`.
 
 Item context (3rd arg to filters, `$context`): `[ 'type' => string, 'object' => WP_Post|WP_Term|WP_Post_Type|null ]`.
 
