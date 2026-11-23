@@ -158,8 +158,9 @@ abstract class TestCase extends PHPUnitTestCase {
 		$this->stub_query_conditionals( [ 'is_single' ] );
 
 		Monkey\Functions\when( 'get_post' )->alias(
-			static fn ( $id = 0 ) => new \WP_Post( 42 )
+			static fn () => new \WP_Post( 42 )
 		);
+		Monkey\Functions\when( 'home_url' )->justReturn( 'http://example.org/' );
 		Monkey\Functions\when( 'get_post_type' )->justReturn( $post_type );
 		Monkey\Functions\when( 'get_the_title' )->justReturn( 'Long Post Title' );
 		Monkey\Functions\when( 'get_permalink' )->justReturn( 'http://example.org/long-post/' );
@@ -212,7 +213,7 @@ abstract class TestCase extends PHPUnitTestCase {
 	 */
 	private function stub_post_meta( array $meta ): void {
 		Monkey\Functions\when( 'get_post_meta' )->alias(
-			static function ( $id, $key = '', $single = false ) use ( $meta ) {
+			static function ( $id, $key = '' ) use ( $meta ) {
 				return $meta[ $key ] ?? '';
 			}
 		);

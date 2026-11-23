@@ -21,6 +21,7 @@ defined( 'ABSPATH' ) || exit;
 
 // Load required files.
 require_once __DIR__ . '/includes/short-title.php';
+require_once __DIR__ . '/includes/primary-term.php';
 require_once __DIR__ . '/includes/breadcrumbs.php';
 
 /**
@@ -35,6 +36,7 @@ function breadcrumb_block_block_init() {
 }
 add_action( 'init', __NAMESPACE__ . '\\breadcrumb_block_block_init' );
 add_action( 'init', [ Short_Title::class, 'init' ] );
+add_action( 'init', [ Primary_Term::class, 'init' ] );
 
 /**
  * Renders the `boldblocks/breadcrumb-block` block on the server.

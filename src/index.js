@@ -18,7 +18,7 @@ import "./style.scss";
  * Internal dependencies
  */
 import edit from "./edit";
-import "./short-title-panel";
+import "./breadcrumb-panel";
 import { ReactComponent as BlockIcon } from "./assets/block-icon.svg";
 import metadata from "./block.json";
 

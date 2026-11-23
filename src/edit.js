@@ -8,8 +8,10 @@ import clsx from "clsx";
  */
 import { __ } from "@wordpress/i18n";
 import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
+import { useSelect } from "@wordpress/data";
 /* eslint-disable @wordpress/no-unsafe-wp-apis -- ToolsPanel/ToolsPanelItem are still exported as __experimental in WordPress core (same imports core blocks use); drop this when they graduate. */
 import {
+  SelectControl,
   ToggleControl,
   TextControl,
   __experimentalUnitControl as UnitControl,
@@ -40,6 +42,7 @@ import "./editor.scss";
  * @param {Object}                         root0.attributes                 Block attributes.
  * @param {string}                         root0.attributes.gap             Gap between breadcrumb items.
  * @param {string}                         root0.attributes.separator       Separator between breadcrumb items.
+ * @param {string}                         root0.attributes.taxonomy        Taxonomy shown for single items.
  * @param {boolean}                        root0.attributes.hideHomePage    Whether to hide the home page item.
  * @param {boolean}                        root0.attributes.hideCurrentPage Whether to hide the current page item.
  * @param {string}                         root0.attributes.homeText        Legacy home label, migrated to labels.home.
@@ -53,6 +56,7 @@ export default function Edit({
   attributes: {
     gap = ".4em",
     separator,
+    taxonomy = "",
     hideHomePage,
     hideCurrentPage,
     homeText,
@@ -134,6 +138,17 @@ export default function Edit({
     },
   ];
 
+  const taxonomies = useSelect(
+    (select) => select("core").getTaxonomies({ per_page: -1 }),
+    []
+  );
+  const taxonomyLabel = __("Taxonomy for single items", "breadcrumb-block");
+  const taxonomyOptions = [
+    { label: __("Auto", "breadcrumb-block"), value: "" },
+    ...(taxonomies ?? [])
+      .filter((item) => item.hierarchical)
+      .map((item) => ({ label: item.name, value: item.slug })),
+  ];
   const gapLabel = __("Gap", "breadcrumb-block");
   const separatorLabel = __("Separator", "breadcrumb-block");
   const hideHomePageLabel = __("Hide home page link", "breadcrumb-block");
@@ -156,6 +171,7 @@ export default function Edit({
                 setAttributes({
                   gap: ".4em",
                   separator: "/",
+                  taxonomy: "",
                   hideHomePage: false,
                   hideCurrentPage: false,
                   homeText: "",
@@ -206,6 +222,24 @@ export default function Edit({
                     />
                   ))}
                 </ToggleGroupControl>
+              </ToolsPanelItem>
+              <ToolsPanelItem
+                label={taxonomyLabel}
+                hasValue={() => taxonomy !== ""}
+                onDeselect={() =>
+                  setAttributes({
+                    taxonomy: "",
+                  })
+                }
+                isShownByDefault={true}
+              >
+                <SelectControl
+                  label={taxonomyLabel}
+                  value={taxonomy}
+                  options={taxonomyOptions}
+                  onChange={(value) => setAttributes({ taxonomy: value })}
+                  __next40pxDefaultSize
+                />
               </ToolsPanelItem>
               <ToolsPanelItem
                 label={hideHomePageLabel}

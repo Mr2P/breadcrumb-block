@@ -206,6 +206,7 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 					'item_before' => '',
 					'item_after'  => '',
 					'separator'   => '',
+					'taxonomy'    => '',
 					'aria_label'  => esc_attr_x( 'Breadcrumbs', 'breadcrumb aria label', 'breadcrumb-block' ),
 					'labels'      => [],
 					'echo'        => false,
@@ -431,35 +432,27 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 			// Allow adding items at the start of the single item.
 			do_action( 'breadcrumb_block_single_prepend', $post, $this );
 
-			if ( 'product' === get_post_type( $post ) ) {
+			$is_product = 'product' === get_post_type( $post );
+
+			if ( $is_product ) {
 				$this->prepend_shop_page();
+			}
 
-				$terms = wc_get_product_terms(
-					$post->ID,
-					'product_cat',
-					apply_filters(
-						'breadcrumb_block_product_terms_args',
-						[
-							'orderby' => 'parent',
-							'order'   => 'DESC',
-						]
-					)
+			// The main term: the per-item primary term wins, otherwise the block taxonomy (or the type default).
+			$main_term = $this->get_single_main_term( $post );
+
+			if ( $main_term ) {
+				$this->term_ancestors( $main_term->term_id, $main_term->taxonomy );
+				$this->add_item(
+					$main_term->name,
+					get_term_link( $main_term ),
+					[],
+					[
+						'type'   => 'term',
+						'object' => $main_term,
+					]
 				);
-
-				if ( $terms ) {
-					$main_term = apply_filters( 'breadcrumb_block_main_term', $terms[0], $terms, 'product_cat' );
-					$this->term_ancestors( $main_term->term_id, 'product_cat' );
-					$this->add_item(
-						$main_term->name,
-						get_term_link( $main_term ),
-						[],
-						[
-							'type'   => 'term',
-							'object' => $main_term,
-						]
-					);
-				}
-			} elseif ( 'post' !== get_post_type( $post ) ) {
+			} elseif ( ! $is_product && 'post' !== get_post_type( $post ) ) {
 				$post_type = get_post_type_object( get_post_type( $post ) );
 
 				// Allow the ability to remove the post type name from the breadcrumb.
@@ -480,21 +473,6 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 
 				// If the post has a parent, follow the parent trail.
 				$this->add_parent_crumbs( $post->post_parent );
-			} else {
-				$cats = get_the_category( $post );
-				if ( $cats ) {
-					$cat = apply_filters( 'breadcrumb_block_main_term', $cats[0], $cats, 'category' );
-					$this->term_ancestors( $cat->term_id, 'category' );
-					$this->add_item(
-						$cat->name,
-						get_term_link( $cat ),
-						[],
-						[
-							'type'   => 'term',
-							'object' => $cat,
-						]
-					);
-				}
 			}
 
 			// Allow adding items right before the current item.
@@ -513,6 +491,104 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 					'object' => $post,
 				]
 			);
+		}
+
+		/**
+		 * Resolve the main term for a single item.
+		 *
+		 * The per-item primary term wins when set; otherwise the block-configured
+		 * taxonomy, falling back to the type default (product category, category).
+		 *
+		 * @param \WP_Post $post The single post.
+		 * @return \WP_Term|null
+		 */
+		protected function get_single_main_term( \WP_Post $post ): ?\WP_Term {
+			// The per-item primary term, when selected.
+			$primary = $this->primary_term_for( $post );
+
+			if ( $primary ) {
+				return $primary;
+			}
+
+			return $this->default_main_term( $post );
+		}
+
+		/**
+		 * Resolve the default main term from the block taxonomy or the type default.
+		 *
+		 * @param \WP_Post $post The single post.
+		 * @return \WP_Term|null
+		 */
+		protected function default_main_term( \WP_Post $post ): ?\WP_Term {
+			$configured = $this->args['taxonomy'] ?? '';
+
+			if ( '' !== $configured ) {
+				$main_term = $this->main_term_from_terms( get_the_terms( $post, $configured ), $configured );
+
+				if ( $main_term ) {
+					return $main_term;
+				}
+			}
+
+			if ( 'product' === get_post_type( $post ) ) {
+				return $this->main_term_from_terms(
+					wc_get_product_terms(
+						$post->ID,
+						'product_cat',
+						apply_filters(
+							'breadcrumb_block_product_terms_args',
+							[
+								'orderby' => 'parent',
+								'order'   => 'DESC',
+							]
+						)
+					),
+					'product_cat'
+				);
+			}
+
+			if ( 'post' === get_post_type( $post ) ) {
+				return $this->main_term_from_terms( get_the_category( $post ), 'category' );
+			}
+
+			return null;
+		}
+
+		/**
+		 * Pick the main term from a list of assigned terms.
+		 *
+		 * @param array  $terms    The assigned terms.
+		 * @param string $taxonomy The taxonomy of the terms.
+		 * @return \WP_Term|null
+		 */
+		protected function main_term_from_terms( $terms, string $taxonomy ): ?\WP_Term {
+			if ( is_wp_error( $terms ) || ! $terms ) {
+				return null;
+			}
+
+			return apply_filters( 'breadcrumb_block_main_term', $terms[0], $terms, $taxonomy );
+		}
+
+		/**
+		 * Resolve the item's primary term meta, when set and assigned.
+		 *
+		 * @param \WP_Post $post The single post.
+		 * @return \WP_Term|null
+		 */
+		protected function primary_term_for( \WP_Post $post ): ?\WP_Term {
+			$primary_id = (int) get_post_meta( $post->ID, Primary_Term::META_KEY, true );
+
+			if ( ! $primary_id ) {
+				return null;
+			}
+
+			$term = get_term( $primary_id );
+
+			if ( ! $term instanceof \WP_Term || is_wp_error( $term ) || ! has_term( $primary_id, $term->taxonomy, $post ) ) {
+				return null;
+			}
+
+			return apply_filters( 'breadcrumb_block_get_primary_term', $term, $post );
 		}
 
 		/**
