@@ -383,7 +383,19 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 		 * Is home trail.
 		 */
 		protected function add_crumbs_home(): void {
-			$this->add_item( single_post_title( '', false ), '', [ 'aria-current' => 'page' ], [ 'type' => 'home' ] );
+			$title = (string) single_post_title( '', false );
+
+			// The block can render before the loop (block themes with the block in a
+			// template part), and paged contexts have no queried post: single_post_title()
+			// is empty there. Fall back to the posts page title, then the site title.
+			if ( '' === $title ) {
+				$page_for_posts = (int) get_option( 'page_for_posts' );
+				$title          = $page_for_posts
+				? (string) get_post_field( 'post_title', $page_for_posts )
+				: (string) get_bloginfo( 'name' );
+			}
+
+			$this->add_item( $title, '', [ 'aria-current' => 'page' ], [ 'type' => 'home' ] );
 		}
 
 		/**
@@ -973,11 +985,16 @@ if ( ! class_exists( Breadcrumbs::class ) ) {
 			$markup['itemListElement'] = [];
 
 			foreach ( $crumbs as $key => $crumb ) {
+				// Item names carry HTML entities from the labels (esc_html-ready
+				// output); the schema name must match the text the user sees, so
+				// decode them (e.g. 'Search results for &ldquo;x&rdquo;').
+				$item_name = html_entity_decode( (string) $crumb[0], ENT_QUOTES, 'UTF-8' );
+
 				$markup['itemListElement'][ $key ] = [
 					'@type'    => 'ListItem',
 					'position' => $key + 1,
 					'item'     => [
-						'name' => $crumb[0],
+						'name' => $item_name,
 					],
 				];
 

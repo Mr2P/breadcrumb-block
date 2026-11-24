@@ -1,6 +1,6 @@
 {
   "name": "breadcrumb-block",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "A simple breadcrumb trail block that supports JSON-LD structured data",
   "author": "Phi Phan",
   "license": "GPL-2.0-or-later",
@@ -21,10 +21,14 @@
     "test": "yarn test:js && yarn test:php",
     "test:js": "wp-scripts test-unit-js --passWithNoTests",
     "test:php": "composer test:php",
+    "test:e2e": "playwright test",
+    "test:e2e:gifs": "node e2e/make-gifs.mjs",
+    "e2e:proofs": "yarn test:e2e && yarn test:e2e:gifs",
     "verify": "yarn lint && yarn test && yarn build",
     "make-pot": "wp i18n make-pot . languages/breadcrumb-block.pot"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@wordpress/block-editor": "^20.1.0",
     "@wordpress/blocks": "^17.2.0",
     "@wordpress/components": "^45.0.0",
@@ -35,7 +39,9 @@
     "@wordpress/i18n": "^7.2.0",
     "@wordpress/plugins": "^8.2.0",
     "@wordpress/scripts": "^37.2.0",
+    "gifenc": "^1.0.3",
     "globby": "^11.1.0",
+    "pngjs": "^7.0.0",
     "semver": "^6.3.0",
     "vite": "8",
     "vitest": "5"

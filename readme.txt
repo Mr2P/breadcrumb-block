@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, Gutenberg, navigation, menu
 Requires PHP:      8.0
 Requires at least: 7.1
 Tested up to:      7.2
-Stable tag:        1.1.1
+Stable tag:        1.2.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Donate link:       https://boldblocks.net?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Breadcrumb+Block+Donate
@@ -143,9 +143,20 @@ Anyone can use this plugin.
 
 == Changelog ==
 
-= Unreleased =
+= 1.2.0 =
+*Release Date - 24 November 2026*
+
 * Added    - Primary term selection: choose the taxonomy shown for single-item trails in the block settings, and a per-post primary term in the Breadcrumb sidebar panel
 * Added    - Breadcrumb short title: a per-post and per-term field to show a shorter label in the trail and the JSON-LD structured data
+* Fixed    - JSON-LD `name` showed raw HTML entities (e.g. `&ldquo;`) instead of the text the visitor sees
+* Fixed    - Fatal error on a paged blog home when the posts page title could not be resolved
+* Fixed    - The Breadcrumb sidebar panel listed no terms in the primary term dropdown
+* Added    - Playwright E2E suite with GIF/screenshot proofs against the local test site
+
+= 1.1.1 =
+*Release Date - 07 May 2026*
+
+* Improved - Updated instpector control style
 
 = 1.1.1 =
 *Release Date - 07 May 2026*

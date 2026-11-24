@@ -56,12 +56,13 @@ const BreadcrumbPanel = () => {
   const selectedTaxonomy = mapping[postType] || defaultTaxonomy;
 
   // The terms of the selected taxonomy assigned to the post.
+  // per_page is capped at 100 by the REST API: anything above is a 400.
   const terms = useSelect(
     (select) =>
       selectedTaxonomy
         ? (select("core").getEntityRecords("taxonomy", selectedTaxonomy, {
             post: postId,
-            per_page: -1,
+            per_page: 100,
             hide_empty: false,
           }) ?? [])
         : [],

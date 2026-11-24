@@ -42,6 +42,54 @@ class GenerateTest extends TestCase {
 	}
 
 	/**
+	 * When single_post_title() is empty (paged blog home, or the block rendered
+	 * before the loop), the trail falls back to the posts page title, then the
+	 * site title, instead of fatals on a null title.
+	 *
+	 * @return void
+	 */
+	public function test_generate_home_trail_falls_back_when_no_title() {
+		$this->stub_query_conditionals( [ 'is_home', 'is_paged' ] );
+		Monkey\Functions\when( 'home_url' )->justReturn( 'http://example.org/' );
+		Monkey\Functions\when( 'single_post_title' )->justReturn( '' );
+		Monkey\Functions\when( 'is_paged' )->justReturn( true );
+		Monkey\Functions\when( 'get_query_var' )->justReturn( 2 );
+		Monkey\Functions\when( 'get_option' )->justReturn( 0 );
+		Monkey\Functions\when( 'get_bloginfo' )->justReturn( 'Site Name' );
+
+		$breadcrumbs = Breadcrumbs::get_instance();
+		$breadcrumbs->parse_args( [] );
+		$items = $breadcrumbs->generate();
+
+		$this->assertSame( 'Site Name', $items[1][0] );
+	}
+
+	/**
+	 * A posts page title wins over the site title fallback.
+	 *
+	 * @return void
+	 */
+	public function test_generate_home_trail_falls_back_to_posts_page_title() {
+		$this->stub_query_conditionals( [ 'is_home', 'is_paged' ] );
+		Monkey\Functions\when( 'home_url' )->justReturn( 'http://example.org/' );
+		Monkey\Functions\when( 'single_post_title' )->justReturn( '' );
+		Monkey\Functions\when( 'is_paged' )->justReturn( true );
+		Monkey\Functions\when( 'get_query_var' )->justReturn( 2 );
+		Monkey\Functions\when( 'get_option' )->alias(
+			static function ( $key, $fallback = false ) {
+				return 'page_for_posts' === $key ? 42 : $fallback;
+			}
+		);
+		Monkey\Functions\when( 'get_post_field' )->justReturn( 'Newsroom' );
+
+		$breadcrumbs = Breadcrumbs::get_instance();
+		$breadcrumbs->parse_args( [] );
+		$items = $breadcrumbs->generate();
+
+		$this->assertSame( 'Newsroom', $items[1][0] );
+	}
+
+	/**
 	 * The whole trail is skipped on the front page.
 	 *
 	 * @return void

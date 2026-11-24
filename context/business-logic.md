@@ -104,7 +104,7 @@ Finally applies the `breadcrumb_block_get_items` filter to the whole array.
 | Method | Trail | Item links | Context types |
 |--------|-------|------------|---------------|
 | `add_crumbs_front_page` | Home label + URL. Filters: `breadcrumb_block_home_text`, `breadcrumb_block_home_url`. Attrs `rel="home"` (converted to the `--home` class in markup). | yes | `front_page` |
-| `add_crumbs_home` | Blog posts page title (when home is a static page). `aria-current="page"`. | no | `home` |
+| `add_crumbs_home` | Blog posts page title (when home is a static page). Falls back to the posts page title (`page_for_posts`), then the site title, when `single_post_title()` is empty (paged home, or the block rendered before the loop). `aria-current="page"`. | no | `home` |
 | `add_crumbs_404` | `error404` label. `aria-current="page"`. | no | `404` |
 | `add_crumbs_attachment` | Parent trail via `add_crumbs_single( parent )`, then the attachment title. | yes | `attachment` |
 | `add_crumbs_single` | See breakdown below. | yes | `single` |
@@ -179,6 +179,7 @@ Rules:
 ```
 
 - `position` is the 1-based array index.
+- `name` is the item name with HTML entities decoded (e.g. `Search results for “%s”`), so the schema matches the text the visitor sees - item names are stored entity-encoded for safe markup output.
 - `@id` is the crumb link; for linkless crumbs it falls back to the current request URL (from `$_SERVER['HTTP_HOST']` + `REQUEST_URI`, `https` when `$_SERVER['HTTPS']` is non-empty, passed through `esc_url_raw`).
 - Filtered by `breadcrumb_block_structured_data( $markup, $breadcrumbs )`.
 - `output_structured_data()` prints it in `wp_footer` as `<script type="application/ld+json">` with `_wp_specialchars( ..., ENT_NOQUOTES, 'UTF-8', true )`.

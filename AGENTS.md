@@ -40,6 +40,9 @@ Install JS deps: `yarn install`. Install PHP deps: `composer install`.
 | `yarn test:js` | JS unit tests only (Vitest via wp-scripts, picks up `src/**/*.test.js`). |
 | `yarn test:php` | PHP unit tests only (`tests/php/`, pure unit - no WordPress boot). |
 | `yarn verify` | Full gate: `lint` + `test` + `build`. Run before declaring done. |
+| `yarn test:e2e` | Playwright E2E suite against the local test site (see E2E testing below). |
+| `yarn test:e2e:gifs` | Encode GIF proofs from the last E2E run (`e2e-proof/gifs/` + `index.html`). |
+| `yarn e2e:proofs` | `test:e2e` + `test:e2e:gifs` in one go - the release-proof command. |
 | `yarn build` | Build block assets (`wp-scripts build`). Required after changing `src/`. |
 | `yarn start` | Dev mode with watch (`wp-scripts start`). |
 | `yarn format` | Format code (`wp-scripts format`). |
@@ -50,7 +53,17 @@ Install JS deps: `yarn install`. Install PHP deps: `composer install`.
 | `yarn git-tag` | `git add . && git commit` + annotated tag `v{version}` + push tag to origin. |
 | `yarn make-pot` | Generate POT translation file. |
 
-PHP unit tests run with PHPUnit 9 + Brain Monkey (pure unit, no WordPress boot, no Docker). The bootstrap is `tests/php/bootstrap.php`; the base test case stubs query conditionals (`stub_query_conditionals`) and filters (`override_apply_filters`). Not scaffolded yet: wp-env / full WordPress test harness for integration tests. Verify PHP changes with `yarn test:php` plus `composer run lint:wpcs`.
+PHP unit tests run with PHPUnit 9 + Brain Monkey (pure unit, no WordPress boot, no Docker). The bootstrap is `tests/php/bootstrap.php`; the base test case stubs query conditionals (`stub_query_conditionals`) and filters (`override_apply_filters`). Verify PHP changes with `yarn test:php` plus `composer run lint:wpcs`.
+
+## E2E testing (Playwright)
+
+The E2E suite runs against the local WAMP test site `https://test.boldblocks.local`, whose `wp-content/plugins/breadcrumb-block` is a symlink to this repo, so `yarn build` instantly changes what the specs see. One test site is required: no Docker/`wp-env` on this machine.
+
+- Setup once: copy `.env.e2e.example` to `.env.e2e` (git-ignored) and set `E2E_ADMIN_PASSWORD`. Reset the admin password with `wp --path=<E2E_SITE_PATH> user update bbtest-agent --user_pass=<password>`.
+- Run everything: `yarn e2e:proofs` (or `yarn test:e2e` for the suite alone, `yarn test:e2e:gifs` for proofs only).
+- Layout: `e2e/specs/frontend/*` (public trails + JSON-LD) and `e2e/specs/admin/*` (settings screen + editor sidebar panel). `e2e/auth.setup.ts` logs in once and stores state in `e2e-proof/.auth/`.
+- Proofs: each spec captures step screenshots and frame sequences (`e2e/helpers/proof.ts`); `e2e/make-gifs.mjs` encodes the frames into GIFs (pure JS - the Playwright-bundled ffmpeg cannot encode GIFs). Everything lands in the git-ignored `e2e-proof/` (see `e2e-proof/gifs/index.html` for an index).
+- Sandbox fixtures the specs rely on: `bb-demo-data` (docs CPT + taxonomies), demo posts `demo-short-title` (1551), `demo-primary-term` (1550), `long-title-demo` (1545), page `bb-agent-test` (1542), `docs` posts 1547-1549, option `breadcrumb_block_taxonomies = { post: category, docs: doc-section }`. The mu-plugin `wp-content/mu-plugins/bb-breadcrumb-e2e.php` on the test site renders the block on non-singular contexts (archives, search, 404); singles carry the block in their content. `e2e/specs/frontend/fixtures.spec.ts` fails fast when the sandbox drifts.
 
 ## Block render flow
 

@@ -4,6 +4,8 @@ module.exports = [
   {
     ignores: [
       "eslint.config.js",
+      "playwright.config.*",
+      "e2e/**",
       "**/build/**",
       "**/node_modules/**",
       "**/vendor/**",

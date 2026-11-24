@@ -40,6 +40,25 @@ class StructuredDataTest extends TestCase {
 	}
 
 	/**
+	 * Names are stored with HTML entities for safe output; the schema name
+	 * must show the text the user sees, so entities are decoded.
+	 *
+	 * @return void
+	 */
+	public function test_structured_data_decodes_entities_in_names() {
+		$breadcrumbs = Breadcrumbs::get_instance();
+		$breadcrumbs->parse_args( [] );
+		$breadcrumbs->add_item( 'Search results for &ldquo;travel&rdquo;', 'http://example.org/?s=travel' );
+		$breadcrumbs->add_item( 'Are Apples & Yogurt Healthy?', 'http://example.org/apples/' );
+		$breadcrumbs->generate_breadcrumb_structured_data( $breadcrumbs );
+
+		$data = $this->get_property( $breadcrumbs, 'structured_data' );
+
+		$this->assertSame( 'Search results for “travel”', $data['itemListElement'][0]['item']['name'] );
+		$this->assertSame( 'Are Apples & Yogurt Healthy?', $data['itemListElement'][1]['item']['name'] );
+	}
+
+	/**
 	 * Linkless items fall back to the current request URL.
 	 *
 	 * @return void
