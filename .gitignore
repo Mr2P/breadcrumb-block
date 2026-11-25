@@ -31,11 +31,11 @@ vendor/
 .phpunit.result.cache
 
 # E2E proof recordings (videos, screenshots, gifs)
-e2e-proof/
+tests/e2e-proof/
 
 # E2E credentials and Playwright HTML report
 .env.e2e
-playwright-report/
+tests/playwright-report/
 
 # Output of `npm pack`
 *.tgz

@@ -1,6 +1,6 @@
 /**
  * Logs into wp-admin once per run and stores the authenticated browser state
- * so the admin specs can skip the login form. State lives in e2e-proof/ (git-ignored).
+ * so the admin specs can skip the login form. State lives in tests/e2e-proof/.auth (git-ignored).
  */
 import fs from 'node:fs';
 import path from 'node:path';

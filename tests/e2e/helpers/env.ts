@@ -9,8 +9,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 // Playwright loads .ts as CommonJS here; resolve from this file's location so
-// the loader works regardless of the current working directory.
-const projectRoot = path.resolve(__dirname, '../..');
+// the loader works regardless of the current working directory. The harness
+// lives at tests/e2e/, so the project root is three levels up.
+const projectRoot = path.resolve(__dirname, '../../..');
+const testsDir = path.resolve(__dirname, '../..');
 const envFile = path.join(projectRoot, '.env.e2e');
 
 if (fs.existsSync(envFile)) {
@@ -43,7 +45,7 @@ export const env = {
 	/** Absolute path of the WordPress install behind the test site (for wp-cli seeding). */
 	sitePath: process.env.E2E_SITE_PATH || 'D:/Working/BoldBlocks/Test/Source',
 	/** Where Playwright stores the authenticated storage state (git-ignored). */
-	storageState: path.join(projectRoot, 'e2e-proof', '.auth', 'admin.json'),
+	storageState: path.join(testsDir, 'e2e-proof', '.auth', 'admin.json'),
 	/** Directory for run artifacts: videos, screenshots, gifs (git-ignored). */
-	artifactsDir: path.join(projectRoot, 'e2e-proof'),
+	artifactsDir: path.join(testsDir, 'e2e-proof'),
 };

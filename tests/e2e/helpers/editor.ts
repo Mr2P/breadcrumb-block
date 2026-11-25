@@ -14,8 +14,24 @@ export async function openPostEditor(page: Page, postId: number): Promise<void> 
 		await page.goto(url, { waitUntil: 'load' });
 		const canvas = page.frameLocator('iframe[name="editor-canvas"]').locator('.block-editor-block-list__layout');
 		await canvas.waitFor({ timeout: 30_000 });
+		await dismissPostLock(page);
 		await openSettingsSidebar(page);
 		return;
+	}
+}
+
+/**
+ * The sandbox is shared: another user (or a previous run) can hold the post
+ * lock, which shows a takeover dialog and hides the editor behind it. Taking
+ * over keeps the specs deterministic.
+ */
+async function dismissPostLock(page: Page): Promise<void> {
+	const dialog = page
+		.locator('[role="dialog"], .components-modal__content')
+		.filter({ hasText: /being edited/i });
+	if (await dialog.count()) {
+		await dialog.getByRole('button', { name: /Take over/i }).click();
+		await page.waitForTimeout(1200);
 	}
 }
 

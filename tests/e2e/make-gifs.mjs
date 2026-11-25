@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
  * Encodes the per-test frame sequences captured by proofGif()
- * (e2e-proof/artifacts/.../gif-frames-.../ directories) into GIFs in
- * e2e-proof/gifs, using pure JS (gifenc + pngjs) - no system ffmpeg needed.
- * Also writes a manifest of every proof artifact.
+ * (tests/e2e-proof/artifacts/.../gif-frames-.../ directories) into GIFs in
+ * tests/e2e-proof/gifs, using pure JS (gifenc + pngjs) - no system ffmpeg
+ * needed. Also writes a manifest of every proof artifact.
  *
  * Run after `playwright test` (or use `yarn test:e2e`, which does both).
  */
@@ -15,9 +15,9 @@ import { PNG } from 'pngjs';
 
 const { GIFEncoder, quantize, applyPalette } = gifenc;
 
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const artifactsDir = path.join(projectRoot, 'e2e-proof', 'artifacts');
-const gifsDir = path.join(projectRoot, 'e2e-proof', 'gifs');
+const testsDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const artifactsDir = path.join(testsDir, 'e2e-proof', 'artifacts');
+const gifsDir = path.join(testsDir, 'e2e-proof', 'gifs');
 
 function walk(dir) {
 	const found = [];
@@ -113,17 +113,17 @@ function main() {
 
 		const screenshots = walk(testDir)
 			.filter((file) => file.endsWith('.png') && !file.startsWith(dir + path.sep))
-			.map((file) => path.relative(projectRoot, file));
+			.map((file) => path.relative(testsDir, file));
 
 		manifest.proofs.push({
 			test: testName,
 			label,
-			gif: path.relative(projectRoot, gif),
+			gif: path.relative(testsDir, gif),
 			frames: frames.length,
 			screenshots,
 		});
 		console.log(
-			`GIF  ${path.relative(projectRoot, gif)} (${frames.length} frames, ${(fs.statSync(gif).size / 1024).toFixed(0)} KB)`
+			`GIF  ${path.relative(testsDir, gif)} (${frames.length} frames, ${(fs.statSync(gif).size / 1024).toFixed(0)} KB)`
 		);
 	}
 

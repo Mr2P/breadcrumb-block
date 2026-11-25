@@ -21,8 +21,8 @@
     "test": "yarn test:js && yarn test:php",
     "test:js": "wp-scripts test-unit-js --passWithNoTests",
     "test:php": "composer test:php",
-    "test:e2e": "playwright test",
-    "test:e2e:gifs": "node e2e/make-gifs.mjs",
+    "test:e2e": "playwright test --config tests/playwright.config.ts",
+    "test:e2e:gifs": "node tests/e2e/make-gifs.mjs",
     "e2e:proofs": "yarn test:e2e && yarn test:e2e:gifs",
     "verify": "yarn lint && yarn test && yarn build",
     "make-pot": "wp i18n make-pot . languages/breadcrumb-block.pot"

@@ -1,8 +1,8 @@
 /**
  * Proof helpers: every spec captures a labelled screenshot and a frame
- * sequence at the key moment of the flow. `node e2e/make-gifs.mjs` encodes
+ * sequence at the key moment of the flow. `node tests/e2e/make-gifs.mjs` encodes
  * the frame sequences into GIFs after a run. All artifacts land under the
- * git-ignored e2e-proof/ directory.
+ * git-ignored tests/e2e-proof/ directory.
  */
 import fs from 'node:fs';
 import path from 'node:path';
