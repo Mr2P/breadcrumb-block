@@ -4,7 +4,7 @@ Tags:              breadcrumb, block, SEO, navigation, WooCommerce
 Requires PHP:      8.0
 Requires at least: 7.1
 Tested up to:      7.2
-Stable tag:        1.2.0
+Stable tag:        1.2.1
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Donate link:       https://boldblocks.net?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Breadcrumb+Block+Donate
@@ -174,7 +174,7 @@ You can use it in the Block Editor, Site Editor, and template files.
 
 == Changelog ==
 
-= 1.2.0 =
+= 1.2.1 =
 *Release Date - 25 November 2026*
 
 * Added    - Primary term selection: choose the taxonomy shown for single-item trails in the block settings, and a per-post primary term in the Breadcrumb sidebar panel
