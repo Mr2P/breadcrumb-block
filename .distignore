@@ -1,0 +1,27 @@
+# yarn plugin-zip uses this list: keep the WordPress.org release build to
+# shipped files only (dev tooling, tests, and local config stay behind).
+.editorconfig
+.env.e2e
+.env.e2e.example
+.git
+.gitattributes
+.gitignore
+.pcpignore
+.phpcs.cache
+.phpunit.result.cache
+.prettierrc.json
+.stylelintrc.json
+AGENTS.md
+CLAUDE.md
+composer.json
+composer.lock
+context/
+eslint.config.js
+node_modules/
+phpcs.xml
+phpunit.xml.dist
+scripts/
+tests/
+vendor/
+vitest.config.ts
+yarn.lock

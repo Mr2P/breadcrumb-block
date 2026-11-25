@@ -1,0 +1,27 @@
+# Plugin Check (.pcpignore): paths excluded from `wp plugin check`.
+# These are development-only files that never ship in the WordPress.org
+# release build (see .distignore for the shipped-file list).
+.editorconfig
+.env.e2e
+.env.e2e.example
+.git
+.gitattributes
+.gitignore
+.distignore
+.pcpignore
+.phpcs.cache
+.phpunit.result.cache
+.prettierrc.json
+.stylelintrc.json
+AGENTS.md
+CLAUDE.md
+composer.json
+composer.lock
+context/
+node_modules/
+phpcs.xml
+phpunit.xml.dist
+scripts/
+tests/
+vendor/
+yarn.lock
