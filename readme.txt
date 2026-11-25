@@ -151,12 +151,8 @@ Anyone can use this plugin.
 * Fixed    - JSON-LD `name` showed raw HTML entities (e.g. `&ldquo;`) instead of the text the visitor sees
 * Fixed    - Fatal error on a paged blog home when the posts page title could not be resolved
 * Fixed    - The Breadcrumb sidebar panel listed no terms in the primary term dropdown
-* Added    - Playwright E2E suite with GIF/screenshot proofs against the local test site
-
-= 1.1.1 =
-*Release Date - 07 May 2026*
-
-* Improved - Updated instpector control style
+* Fixed    - Primary term and short title could not be saved when the classic Custom Fields metabox is shown: it kept its stale value and overwrote the sidebar panel save. Both meta keys are now underscore-prefixed (protected), so the metabox never lists them
+* Added    - Playwright E2E suite with GIF/screenshot proofs against the local test site, including a regression spec for the Custom Fields metabox overwrite
 
 = 1.1.1 =
 *Release Date - 07 May 2026*

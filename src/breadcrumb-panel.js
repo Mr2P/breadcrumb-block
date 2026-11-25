@@ -91,9 +91,9 @@ const BreadcrumbPanel = () => {
             "Optional. Shown in the breadcrumb trail instead of the full title.",
             "breadcrumb-block"
           )}
-          value={meta.breadcrumb_short_title ?? ""}
+          value={meta._breadcrumb_short_title ?? ""}
           onChange={(nextValue) =>
-            setMeta({ breadcrumb_short_title: nextValue })
+            setMeta({ _breadcrumb_short_title: nextValue })
           }
           __next40pxDefaultSize
         />
@@ -104,10 +104,10 @@ const BreadcrumbPanel = () => {
               "Optional. The term whose path leads to this post in the breadcrumb trail.",
               "breadcrumb-block"
             )}
-            value={String(meta.breadcrumb_primary_term ?? 0)}
+            value={String(meta._breadcrumb_primary_term ?? 0)}
             options={termOptions}
             onChange={(nextValue) =>
-              setMeta({ breadcrumb_primary_term: Number(nextValue) })
+              setMeta({ _breadcrumb_primary_term: Number(nextValue) })
             }
             __next40pxDefaultSize
           />

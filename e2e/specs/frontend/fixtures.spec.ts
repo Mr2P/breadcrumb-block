@@ -20,8 +20,8 @@ test.describe('Sandbox fixtures', () => {
 	test('demo posts carry short title and primary term meta', () => {
 		const meta = wpJson<Array<{ meta_key: string; meta_value: string }>>(['post', 'meta', 'list', '1550']);
 		const get = (key: string) => meta.find((m) => m.meta_key === key)?.meta_value;
-		expect(get('breadcrumb_short_title')).toBe('Big Release');
-		expect(get('breadcrumb_primary_term')).toBe('55'); // Tech, while News is the first category.
+		expect(get('_breadcrumb_short_title')).toBe('Big Release');
+		expect(get('_breadcrumb_primary_term')).toBe('55'); // Tech, while News is the first category.
 	});
 
 	test('docs posts are assigned to doc sections', () => {

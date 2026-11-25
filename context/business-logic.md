@@ -69,7 +69,7 @@ Note: internal call sites pass `[]` for attrs (an older version passed `false`; 
 
 ## Short title
 
-Each public post type and public taxonomy has a `breadcrumb_short_title` meta (key: `Short_Title::META_KEY`, registered in `includes/short-title.php`). When it is set on an item's object, `Breadcrumbs::apply_short_title()` swaps the item name before the `breadcrumb_block_get_item` filter runs, so the trail and the JSON-LD both show the short title.
+Each public post type and public taxonomy has a `_breadcrumb_short_title` meta (key: `Short_Title::META_KEY`, registered in `includes/short-title.php`). When it is set on an item's object, `Breadcrumbs::apply_short_title()` swaps the item name before the `breadcrumb_block_get_item` filter runs, so the trail and the JSON-LD both show the short title.
 
 - UI: the "Breadcrumb" panel in the block editor sidebar (public post types, `src/breadcrumb-panel.js`) and fields on the add/edit term forms (public taxonomies).
 - Filter `breadcrumb_block_get_short_title` ( string $short_title, \WP_Post|\WP_Term|null $object ): string - override or disable per item; return `''` to keep the real title. The readme documents a Yoast migration snippet using this filter.
@@ -79,7 +79,7 @@ Each public post type and public taxonomy has a `breadcrumb_short_title` meta (k
 Two-level selection of which term path leads to a single item:
 
 - **Site level** (Settings > Breadcrumb Block, option `breadcrumb_block_taxonomies` = post type => taxonomy slug, `Settings::OPTION_KEY`): which taxonomy feeds single-item trails per post type. The screen lists public post types whose singles can show a term path (pages and attachments excluded - their trails never include a term) with their public taxonomies - flat ones like `post_tag` included; a flat term shows without ancestors. Unmapped types use the Auto default: `category` for posts, `product_cat` for products, no term path for others. A mapped taxonomy without assigned terms for an item falls back to the type default. Registered with `show_in_rest` so the editor panel can read it.
-- **Per item** (meta `breadcrumb_primary_term`, integer term id, `Primary_Term::META_KEY`, registered in `includes/primary-term.php`): when set, the term is assigned to the post, **and** the term belongs to the taxonomy mapped for its post type, the trail and the JSON-LD lead through that term and its ancestors. Otherwise the primary term is ignored and the site-level mapping applies.
+- **Per item** (meta `_breadcrumb_primary_term`, integer term id, `Primary_Term::META_KEY`, registered in `includes/primary-term.php`): when set, the term is assigned to the post, **and** the term belongs to the taxonomy mapped for its post type, the trail and the JSON-LD lead through that term and its ancestors. Otherwise the primary term is ignored and the site-level mapping applies.
 
 The panel (`src/breadcrumb-panel.js`) reads the site mapping and lists the post's assigned terms of the mapped taxonomy. `breadcrumb_block_main_term` applies to the default pick only; filter the primary term via `breadcrumb_block_get_primary_term`. The resolution lives in `Breadcrumbs::single_taxonomy_for()` (mapping + type default) and `primary_term_for()`.
 
@@ -122,7 +122,7 @@ Finally applies the `breadcrumb_block_get_items` filter to the whole array.
 
 1. Fires `breadcrumb_block_single_prepend` action (add items before everything).
 2. **Products** (`product` post type, WooCommerce only): `prepend_shop_page()` - adds the shop page when the product permalink base contains the shop slug and the shop is not the front page.
-3. **Main term** (`get_single_main_term()`): the per-item **primary term** (meta `breadcrumb_primary_term`, when set and assigned to the post; filtered by `breadcrumb_block_get_primary_term`) wins - its taxonomy path (term + ancestors via `term_ancestors`) is used, overriding both defaults. Otherwise the **site-level mapping** (`single_taxonomy_for()`: the `breadcrumb_block_taxonomies` option, per post type) when set: the item's assigned terms of that taxonomy, main term pickable through the `breadcrumb_block_main_term` filter. Otherwise the **type default**: `product_cat` via `wc_get_product_terms` (args filtered by `breadcrumb_block_product_terms_args`) for products, first `category` for posts. A configured taxonomy without assigned terms falls back to the type default - the trail is never emptied.
+3. **Main term** (`get_single_main_term()`): the per-item **primary term** (meta `_breadcrumb_primary_term`, when set and assigned to the post; filtered by `breadcrumb_block_get_primary_term`) wins - its taxonomy path (term + ancestors via `term_ancestors`) is used, overriding both defaults. Otherwise the **site-level mapping** (`single_taxonomy_for()`: the `breadcrumb_block_taxonomies` option, per post type) when set: the item's assigned terms of that taxonomy, main term pickable through the `breadcrumb_block_main_term` filter. Otherwise the **type default**: `product_cat` via `wc_get_product_terms` (args filtered by `breadcrumb_block_product_terms_args`) for products, first `category` for posts. A configured taxonomy without assigned terms falls back to the type default - the trail is never emptied.
 4. **When no main term resolves**: other post types get the post type archive item (when `has_archive`, skippable via `breadcrumb_block_add_post_type_name`) and the parent chain via `add_parent_crumbs`; posts and products get no term path.
 5. Fires `breadcrumb_block_single` and `breadcrumb_block_single_{post_type}` actions.
 6. Adds the post title as the current item (`aria-current="page"`).
@@ -133,7 +133,7 @@ Finally applies the `breadcrumb_block_get_items` filter to the whole array.
 - `get_single_main_term( \WP_Post $post ): ?\WP_Term` - resolves the main term: primary term meta first, then `default_main_term()`.
 - `default_main_term( \WP_Post $post, string $taxonomy ): ?\WP_Term` - picks the default main term from the configured or default taxonomy.
 - `main_term_from_terms( $terms, string $taxonomy ): ?\WP_Term` - picks the first term via `breadcrumb_block_main_term`; returns `null` on error or empty.
-- `primary_term_for( \WP_Post $post, string $taxonomy ): ?\WP_Term` - reads the `breadcrumb_primary_term` meta, validates the term exists, matches the taxonomy, and is assigned to the post; filtered by `breadcrumb_block_get_primary_term`.
+- `primary_term_for( \WP_Post $post, string $taxonomy ): ?\WP_Term` - reads the `_breadcrumb_primary_term` meta, validates the term exists, matches the taxonomy, and is assigned to the post; filtered by `breadcrumb_block_get_primary_term`.
 - `add_parent_crumbs( $parent_id )` - walks the `post_parent` chain, stops at the front page, collects then reverses so the topmost ancestor comes first. Context `page` for pages, `post` otherwise.
 - `term_ancestors( $term_id, $taxonomy )` - `get_ancestors()` reversed, each ancestor added with context `term`.
 - `prepend_shop_page()` - see products above. Context `shop`.

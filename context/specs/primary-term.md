@@ -9,7 +9,7 @@ Single-item trails always show the first category (posts) or the first product c
 Two levels, Yoast-style:
 
 1. **Site level** (Settings > Breadcrumb Block): a per-post-type taxonomy mapping - each public post type whose singles can show a term path (pages and attachments excluded - their trails never include a term) gets a dropdown listing the **public taxonomies attached to that type, flat ones like `post_tag` included** (a flat term shows without ancestors). Default = Auto (no mapping): `category` for posts, `product_cat` for products, no term path for other types. A mapped taxonomy without assigned terms for an item falls back to the type default (the trail is never emptied). Stored in the `breadcrumb_block_taxonomies` option.
-2. **Per-item primary term** (post meta `breadcrumb_primary_term`, integer term id, registered on public post types): when set **and** the term is assigned to the post **and** the term belongs to the mapped taxonomy, the trail and the JSON-LD lead through that term (ancestors included) - overriding the site-level mapping. Otherwise the site-level mapping applies.
+2. **Per-item primary term** (post meta `_breadcrumb_primary_term`, integer term id, underscore-prefixed/protected so the classic Custom Fields metabox cannot overwrite it; registered on public post types): when set **and** the term is assigned to the post **and** the term belongs to the mapped taxonomy, the trail and the JSON-LD lead through that term (ancestors included) - overriding the site-level mapping. Otherwise the site-level mapping applies.
 
 The JSON-LD inherits both levels automatically: the structured data is generated from the same items array during the same render pass (schema exists exactly where the visible trail exists).
 
@@ -19,7 +19,7 @@ UI: a Settings > Breadcrumb Block screen with one dropdown per public post type 
 
 - Filter `breadcrumb_block_get_primary_term` ( ?\WP_Term $primary_term, \WP_Post $post ): ?\WP_Term - override the resolved primary term; return `null` to disable and fall back to the default path.
 - `breadcrumb_block_main_term` still picks the default term on the default path; it does **not** run when a primary term is selected (the primary selection is final - filter that via `breadcrumb_block_get_primary_term`).
-- Meta: `breadcrumb_primary_term` (integer) on public post types; `breadcrumb_short_title` unchanged.
+- Meta: `_breadcrumb_primary_term` (integer) on public post types; `_breadcrumb_short_title` unchanged.
 - Option: `breadcrumb_block_taxonomies` (object, post type => taxonomy slug), sanitized against each type's hierarchical public taxonomies.
 - The block attribute `taxonomy` is removed (superseded by the site-level mapping).
 

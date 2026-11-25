@@ -89,7 +89,7 @@ class SingleTaxonomyTest extends TestCase {
 	 */
 	public function test_primary_term_for_returns_matching_term() {
 		$tech = new \WP_Term( 8, 'Tech', 'category' );
-		$this->stub_post_meta( [ 'breadcrumb_primary_term' => 8 ] );
+		$this->stub_post_meta( [ '_breadcrumb_primary_term' => 8 ] );
 		Monkey\Functions\when( 'get_term' )->alias(
 			static fn ( $id ) => 8 === (int) $id ? $tech : null
 		);
@@ -112,7 +112,7 @@ class SingleTaxonomyTest extends TestCase {
 	 * @return void
 	 */
 	public function test_primary_term_for_ignores_taxonomy_mismatch() {
-		$this->stub_post_meta( [ 'breadcrumb_primary_term' => 7 ] );
+		$this->stub_post_meta( [ '_breadcrumb_primary_term' => 7 ] );
 		Monkey\Functions\when( 'get_term' )->alias(
 			static fn ( $id ) => new \WP_Term( 7, 'News', 'region' )
 		);
@@ -134,7 +134,7 @@ class SingleTaxonomyTest extends TestCase {
 	 */
 	public function test_primary_term_filter_can_disable() {
 		$tech = new \WP_Term( 8, 'Tech', 'category' );
-		$this->stub_post_meta( [ 'breadcrumb_primary_term' => 8 ] );
+		$this->stub_post_meta( [ '_breadcrumb_primary_term' => 8 ] );
 		Monkey\Functions\when( 'get_term' )->alias(
 			static fn ( $id ) => 8 === (int) $id ? $tech : null
 		);

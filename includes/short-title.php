@@ -22,7 +22,7 @@ if ( ! class_exists( Short_Title::class ) ) {
 		 *
 		 * @var string
 		 */
-		public const META_KEY = 'breadcrumb_short_title';
+		public const META_KEY = '_breadcrumb_short_title';
 
 		/**
 		 * Register meta and term form hooks.

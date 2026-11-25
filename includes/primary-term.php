@@ -22,7 +22,7 @@ if ( ! class_exists( Primary_Term::class ) ) {
 		 *
 		 * @var string
 		 */
-		public const META_KEY = 'breadcrumb_primary_term';
+		public const META_KEY = '_breadcrumb_primary_term';
 
 		/**
 		 * Register meta.

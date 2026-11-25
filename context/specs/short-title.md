@@ -6,7 +6,7 @@ Long post and term titles make the breadcrumb trail unwieldy. Editors need a way
 
 ## Behavior
 
-- New meta key `breadcrumb_short_title` (string, single, sanitized) for **all public post types** and **all public taxonomies**.
+- New meta key `_breadcrumb_short_title` (string, single, sanitized, **underscore-prefixed/protected**) for **all public post types** and **all public taxonomies**. Protected meta: the classic Custom Fields metabox never lists it, so its stale page-load value cannot overwrite the sidebar panel save.
 - When set on an item: the visible trail **and** the JSON-LD `BreadcrumbList` show the short title (Google defines `name` as "the title of the breadcrumb displayed for the user"; schema must match the visible trail).
 - When empty or missing: current behavior, byte-identical.
 - Applied centrally in `add_item()`, after `wp_strip_all_tags` and before the `breadcrumb_block_get_item` filter - so singles, parent chains, ancestor terms, and category items all pick it up, and third-party filters see the effective name.
@@ -17,7 +17,7 @@ Long post and term titles make the breadcrumb trail unwieldy. Editors need a way
 ## Contracts
 
 - Filter `breadcrumb_block_get_short_title` ( string $short_title, \WP_Post|\WP_Term|null $object ): string.
-- Meta key `breadcrumb_short_title` on posts and terms (registered with `show_in_rest` for posts so the sidebar panel can persist).
+- Meta key `_breadcrumb_short_title` on posts and terms (registered with `show_in_rest` for posts so the sidebar panel can persist).
 
 ## Out of scope
 

@@ -28,7 +28,7 @@ class PrimaryTermTest extends TestCase {
 				7 => $news,
 				8 => $tech,
 			],
-			[ 'breadcrumb_primary_term' => 8 ]
+			[ '_breadcrumb_primary_term' => 8 ]
 		);
 
 		$trail = $this->single_trail();
@@ -52,7 +52,7 @@ class PrimaryTermTest extends TestCase {
 				7 => $news,
 				8 => $tech,
 			],
-			[ 'breadcrumb_primary_term' => 8 ]
+			[ '_breadcrumb_primary_term' => 8 ]
 		);
 		Monkey\Functions\when( 'get_ancestors' )->alias(
 			static fn ( $id, $taxonomy ) => 8 === (int) $id ? [ 5 ] : []
@@ -74,7 +74,7 @@ class PrimaryTermTest extends TestCase {
 		$news = new \WP_Term( 7, 'News', 'category' );
 		$this->stub_single_post(
 			[ 7 => $news ],
-			[ 'breadcrumb_primary_term' => 99 ]
+			[ '_breadcrumb_primary_term' => 99 ]
 		);
 
 		$trail = $this->single_trail();
@@ -142,7 +142,7 @@ class PrimaryTermTest extends TestCase {
 				9  => $europe,
 				10 => $asia,
 			],
-			[ 'breadcrumb_primary_term' => 10 ],
+			[ '_breadcrumb_primary_term' => 10 ],
 			'post',
 			[ 'post' => 'region' ]
 		);
@@ -169,7 +169,7 @@ class PrimaryTermTest extends TestCase {
 				7 => $news,
 				9 => $region,
 			],
-			[ 'breadcrumb_primary_term' => 7 ],
+			[ '_breadcrumb_primary_term' => 7 ],
 			'post',
 			[ 'post' => 'region' ]
 		);
@@ -223,7 +223,7 @@ class PrimaryTermTest extends TestCase {
 				11 => $ship,
 				12 => $fast,
 			],
-			[ 'breadcrumb_primary_term' => 12 ],
+			[ '_breadcrumb_primary_term' => 12 ],
 			'product'
 		);
 		Monkey\Functions\when( 'wc_get_product_terms' )->alias(
@@ -251,7 +251,7 @@ class PrimaryTermTest extends TestCase {
 				7 => $news,
 				8 => $tech,
 			],
-			[ 'breadcrumb_primary_term' => 8 ]
+			[ '_breadcrumb_primary_term' => 8 ]
 		);
 		$this->override_apply_filters(
 			static function ( $hook_name, $value ) {
